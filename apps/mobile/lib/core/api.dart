@@ -4,7 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
-const apiUrl = String.fromEnvironment('API_URL', defaultValue: 'http://localhost:4000/v1');
+const apiUrl = String.fromEnvironment(
+  'API_URL',
+  defaultValue: 'http://localhost:4000/v1',
+);
 
 /// Where the login token is kept. Secure storage on device; swappable in tests.
 abstract class TokenStore {
@@ -34,11 +37,16 @@ class ApiException implements Exception {
 }
 
 class ApiClient {
-  ApiClient(this.tokens, {http.Client? client}) : _http = client ?? http.Client();
+  ApiClient(this.tokens, {http.Client? client})
+    : _http = client ?? http.Client();
   final TokenStore tokens;
   final http.Client _http;
 
-  Future<dynamic> request(String method, String path, [Map<String, dynamic>? body]) async {
+  Future<dynamic> request(
+    String method,
+    String path, [
+    Map<String, dynamic>? body,
+  ]) async {
     final token = await tokens.read();
     final req = http.Request(method, Uri.parse('$apiUrl$path'))
       ..headers['Content-Type'] = 'application/json'
@@ -50,7 +58,8 @@ class ApiClient {
       final issues = decoded is Map ? decoded['issues'] : null;
       final msg = issues is List && issues.isNotEmpty
           ? issues.first['message'].toString()
-          : (decoded is Map ? decoded['message']?.toString() : null) ?? 'Request failed (${res.statusCode})';
+          : (decoded is Map ? decoded['message']?.toString() : null) ??
+                'Request failed (${res.statusCode})';
       throw ApiException(res.statusCode, msg);
     }
     return decoded;
@@ -58,4 +67,6 @@ class ApiClient {
 }
 
 final tokenStoreProvider = Provider<TokenStore>((_) => SecureTokenStore());
-final apiProvider = Provider<ApiClient>((ref) => ApiClient(ref.watch(tokenStoreProvider)));
+final apiProvider = Provider<ApiClient>(
+  (ref) => ApiClient(ref.watch(tokenStoreProvider)),
+);
