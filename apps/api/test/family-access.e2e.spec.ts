@@ -132,11 +132,15 @@ describe('Family accounts and access (e2e)', () => {
   });
 
   it('will not submit the profile without the candidate’s consent', async () => {
-    const res = await api().post(`/v1/profiles/${profileId}/submit`).set(as('mother')).expect(400);
+    const res = await api()
+      .post(`/v1/profiles/${profileId}/submit`)
+      .set(as('mother'))
+      .send({ idDocumentType: 'PASSPORT' })
+      .expect(400);
     expect(res.body.message).toMatch(/consent/);
   });
 
-  it('lets the candidate join, consent, and then the profile can be submitted', async () => {
+  it('lets the candidate join and consent; submitting then waits for their selfie and ID', async () => {
     await login('candidate', 'Anjali');
     const mine = await api().get('/v1/profiles/mine').set(as('candidate')).expect(200);
     expect(mine.body[0].invitationPending).toBe(true);
@@ -149,8 +153,13 @@ describe('Family accounts and access (e2e)', () => {
     await api().post(`/v1/profiles/${profileId}/consent`).set(as('mother')).expect(403);
     await api().post(`/v1/profiles/${profileId}/consent`).set(as('candidate')).expect(201);
 
-    const res = await api().post(`/v1/profiles/${profileId}/submit`).set(as('mother')).expect(201);
-    expect(res.body.status).toBe('PENDING_VERIFICATION');
+    // Consent alone is not enough: the candidate's own selfie and ID come next (see verification.e2e.spec.ts).
+    const res = await api()
+      .post(`/v1/profiles/${profileId}/submit`)
+      .set(as('mother'))
+      .send({ idDocumentType: 'PASSPORT' })
+      .expect(400);
+    expect(res.body.message).toMatch(/selfie/);
   });
 
   it('gives a sister browse access but only edit suggestions', async () => {
@@ -219,7 +228,7 @@ describe('Family accounts and access (e2e)', () => {
     await pool.end();
     const actions = rows.map((r) => r.action);
     expect(actions).toEqual(
-      expect.arrayContaining(['profile.created', 'member.invited', 'profile.consent_given', 'profile.submitted', 'member.permissions_changed', 'member.removed']),
+      expect.arrayContaining(['profile.created', 'member.invited', 'profile.consent_given', 'member.permissions_changed', 'member.removed']),
     );
   });
 });

@@ -1,29 +1,14 @@
-import {
-  BookText,
-  Clock,
-  Flag,
-  Inbox,
-  LifeBuoy,
-  MessageCircleReply,
-  Search,
-  Ticket,
-  UserSearch,
-} from 'lucide-react';
-import { Card, EmptyState, StaffShell, StatTile, cn } from '@fm/ui';
+'use client';
 
-const nav = [
-  { href: '/', label: 'Inbox', icon: <Inbox /> },
-  { href: '/tickets', label: 'Tickets', icon: <Ticket /> },
-  { href: '/reports', label: 'Reports and disputes', icon: <Flag /> },
-  { href: '/members', label: 'Member lookup', icon: <UserSearch /> },
-  { href: '/replies', label: 'Saved replies', icon: <BookText /> },
-];
+import { Clock, Flag, LifeBuoy, MessageCircleReply, Search, Ticket } from 'lucide-react';
+import { Card, EmptyState, StatTile, cn } from '@fm/ui';
+import { Portal } from '@/components/Portal';
 
 const filters = ['All', 'Unassigned', 'Mine', 'Reports', 'Refunds'];
 
 export default function SupportHome() {
   return (
-    <StaffShell portal="Customer Service" nav={nav} active="/" title="Inbox">
+    <Portal title="Inbox">
       <div className="grid gap-4 sm:grid-cols-3">
         <StatTile label="Open tickets" value="—" icon={<Ticket />} tone="brand" />
         <StatTile
@@ -74,6 +59,6 @@ export default function SupportHome() {
           The ticket queue, member 360 view and saved replies arrive with the support milestone.
         </p>
       </Card>
-    </StaffShell>
+    </Portal>
   );
 }

@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@fm/client": "workspace:*",
     "@fm/shared": "workspace:*",
     "@fm/ui": "workspace:*",
     "lucide-react": "^0.511.0",

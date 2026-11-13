@@ -16,6 +16,7 @@ import {
   ACCESS_LEVELS,
   FAMILY_ROLES,
   GENDERS,
+  ID_DOCUMENT_TYPES,
   KERALA_DISTRICTS,
   MARITAL_STATUSES,
   PROFILE_STATUSES,
@@ -23,7 +24,10 @@ import {
   RELIGIONS,
   STAFF_ROLES,
   STARS,
+  VERIFICATION_STATUSES,
+  type CheckOutcome,
   type PermissionOverrides,
+  type RejectionReason,
   type UpdateProfileInput,
 } from '@fm/shared';
 
@@ -39,6 +43,8 @@ export const profileStatus = pgEnum('profile_status', PROFILE_STATUSES);
 export const accessLevel = pgEnum('access_level', ACCESS_LEVELS);
 export const memberStatus = pgEnum('member_status', ['INVITED', 'ACTIVE', 'REMOVED']);
 export const suggestionStatus = pgEnum('suggestion_status', ['PENDING', 'APPROVED', 'REJECTED']);
+export const verificationStatus = pgEnum('verification_status', VERIFICATION_STATUSES);
+export const idDocumentType = pgEnum('id_document_type', ID_DOCUMENT_TYPES);
 export const photoStatus = pgEnum('photo_status', ['UPLOADING', 'READY', 'REJECTED', 'DELETED']);
 
 const timestamps = {
@@ -97,6 +103,8 @@ export const profiles = pgTable(
     status: profileStatus('status').notNull().default('DRAFT'),
     /** Set when the candidate personally consents to the profile going live. */
     candidateConsentAt: timestamp('candidate_consent_at', { withTimezone: true }),
+    /** Set when the verification team approves the profile. Shown as the verified badge. */
+    verifiedAt: timestamp('verified_at', { withTimezone: true }),
     fullName: varchar('full_name', { length: 100 }).notNull(),
     gender: gender('gender').notNull(),
     dateOfBirth: date('date_of_birth').notNull(),
@@ -216,6 +224,44 @@ export const profilePhotos = pgTable(
   (t) => [index('photos_profile_idx').on(t.profileId, t.status)],
 );
 
+/**
+ * One verification attempt for a profile: the candidate's selfie and government ID, the automatic check
+ * results, and the reviewer's decision. Files live under a private `kyc/` prefix and are only ever shown
+ * to staff through short-lived signed URLs.
+ */
+export const verifications = pgTable(
+  'verifications',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    profileId: uuid('profile_id')
+      .notNull()
+      .references(() => profiles.id),
+    status: verificationStatus('status').notNull().default('COLLECTING'),
+    idDocumentType: idDocumentType('id_document_type'),
+    selfieKey: text('selfie_key'),
+    idFrontKey: text('id_front_key'),
+    idBackKey: text('id_back_key'),
+    /** SHA-256 of each file, to spot the same document reused on another profile. */
+    fileHashes: jsonb('file_hashes').$type<Partial<Record<'SELFIE' | 'ID_FRONT' | 'ID_BACK', string>>>().notNull().default({}),
+    provider: varchar('provider', { length: 32 }),
+    providerRef: varchar('provider_ref', { length: 128 }),
+    checks: jsonb('checks').$type<CheckOutcome[]>().notNull().default([]),
+    /** True when any automatic check needs a closer look. */
+    flagged: boolean('flagged').notNull().default(false),
+    submittedById: uuid('submitted_by_id').references(() => users.id),
+    submittedAt: timestamp('submitted_at', { withTimezone: true }),
+    reviewerId: uuid('reviewer_id').references(() => users.id),
+    decidedAt: timestamp('decided_at', { withTimezone: true }),
+    rejectionReason: varchar('rejection_reason', { length: 32 }).$type<RejectionReason>(),
+    reviewerNote: varchar('reviewer_note', { length: 500 }),
+    ...timestamps,
+  },
+  (t) => [
+    index('verifications_profile_idx').on(t.profileId, t.createdAt),
+    index('verifications_queue_idx').on(t.status, t.submittedAt),
+  ],
+);
+
 /** Every sensitive action, with who did it. */
 export const auditLog = pgTable(
   'audit_log',
@@ -234,3 +280,4 @@ export type User = typeof users.$inferSelect;
 export type Profile = typeof profiles.$inferSelect;
 export type ProfileMember = typeof profileMembers.$inferSelect;
 export type ProfilePhoto = typeof profilePhotos.$inferSelect;
+export type Verification = typeof verifications.$inferSelect;

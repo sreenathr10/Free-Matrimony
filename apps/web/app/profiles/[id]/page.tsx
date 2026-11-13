@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  BadgeCheck,
   Briefcase,
   Cake,
   CheckCircle2,
@@ -137,7 +138,13 @@ function ProfileView({
                 <h1 className="font-display text-3xl font-semibold tracking-tight">
                   {profile.fullName}
                 </h1>
-                <Badge tone={live ? 'verified' : 'neutral'}>{humanize(profile.status)}</Badge>
+                {profile.verifiedAt ? (
+                  <Badge tone="verified" icon={<BadgeCheck className="h-3.5 w-3.5" />}>
+                    Verified
+                  </Badge>
+                ) : (
+                  <Badge tone={live ? 'verified' : 'neutral'}>{humanize(profile.status)}</Badge>
+                )}
               </div>
               <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-ink-muted">
                 <span className="inline-flex items-center gap-1">

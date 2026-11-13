@@ -1,47 +1,68 @@
+'use client';
+
 import {
   BadgeCheck,
   BarChart3,
+  ClipboardList,
   CreditCard,
   IndianRupee,
-  LayoutDashboard,
-  Megaphone,
-  ShieldAlert,
   UserPlus,
-  Users,
-  UsersRound,
 } from 'lucide-react';
-import { Badge, Card, EmptyState, SectionTitle, StaffShell, StatTile } from '@fm/ui';
-
-const nav = [
-  { href: '/', label: 'Overview', icon: <LayoutDashboard /> },
-  { href: '/members', label: 'Members', icon: <Users /> },
-  { href: '/moderation', label: 'Moderation', icon: <ShieldAlert /> },
-  { href: '/plans', label: 'Plans and pricing', icon: <CreditCard /> },
-  { href: '/staff', label: 'Staff and roles', icon: <UsersRound /> },
-  { href: '/campaigns', label: 'Campaigns', icon: <Megaphone /> },
-];
+import { useEffect, useState } from 'react';
+import { Badge, Card, EmptyState, SectionTitle, StatTile, useStaff } from '@fm/ui';
+import { Portal } from '@/components/Portal';
 
 const roadmap = [
-  { title: 'Staff sign-in and roles', milestone: 'M3' },
   { title: 'Member search and 360 view', milestone: 'M7' },
   { title: 'Plans, pricing and refunds', milestone: 'M6' },
   { title: 'Campaigns: push, email, WhatsApp', milestone: 'M7' },
 ];
 
-export default function AdminHome() {
+interface VerificationStats {
+  waiting: number;
+  flagged: number;
+  approvedToday: number;
+  rejectedToday: number;
+}
+
+function Overview() {
+  const { client } = useStaff();
+  const [v, setV] = useState<VerificationStats | null>(null);
+  useEffect(() => {
+    client.api<VerificationStats>('/staff/verifications/stats').then(setV, () => undefined);
+  }, [client]);
+
   return (
-    <StaffShell
-      portal="Admin"
-      nav={nav}
-      active="/"
-      title="Overview"
-      actions={<Badge tone="gold">Live data arrives with analytics</Badge>}
-    >
+    <>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatTile label="Sign-ups today" value="—" icon={<UserPlus />} tone="brand" />
-        <StatTile label="Verified profiles" value="—" icon={<BadgeCheck />} tone="verified" />
-        <StatTile label="Paid members" value="—" icon={<CreditCard />} tone="gold" />
-        <StatTile label="Revenue this month" value="—" icon={<IndianRupee />} tone="neutral" />
+        <StatTile
+          label="Waiting for verification"
+          value={v ? String(v.waiting) : '…'}
+          hint={v ? `${v.flagged} flagged by checks` : undefined}
+          icon={<ClipboardList />}
+          tone="brand"
+        />
+        <StatTile
+          label="Verified today"
+          value={v ? String(v.approvedToday) : '…'}
+          hint={v ? `${v.rejectedToday} rejected` : undefined}
+          icon={<BadgeCheck />}
+          tone="verified"
+        />
+        <StatTile
+          label="Sign-ups today"
+          value="—"
+          hint="Arrives with analytics"
+          icon={<UserPlus />}
+          tone="gold"
+        />
+        <StatTile
+          label="Revenue this month"
+          value="—"
+          hint="Arrives with payments (M6)"
+          icon={<IndianRupee />}
+          tone="neutral"
+        />
       </div>
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">
@@ -72,6 +93,21 @@ export default function AdminHome() {
           </ul>
         </Card>
       </div>
-    </StaffShell>
+    </>
+  );
+}
+
+export default function AdminHome() {
+  return (
+    <Portal
+      title="Overview"
+      actions={
+        <Badge tone="gold" icon={<CreditCard className="h-3 w-3" />}>
+          Payments arrive in M6
+        </Badge>
+      }
+    >
+      <Overview />
+    </Portal>
   );
 }

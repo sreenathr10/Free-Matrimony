@@ -10,7 +10,8 @@
     "test": "jest --runInBand",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "ts-node --transpile-only src/db/migrate.ts",
-    "openapi": "ts-node --transpile-only src/openapi-export.ts"
+    "openapi": "ts-node --transpile-only src/openapi-export.ts",
+    "staff:add": "ts-node --transpile-only src/staff/add-staff.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1168.0",

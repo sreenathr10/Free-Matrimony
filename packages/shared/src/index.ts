@@ -5,3 +5,4 @@ export * from './invites';
 export * from './preferences';
 export * from './completeness';
 export * from './labels';
+export * from './verification';

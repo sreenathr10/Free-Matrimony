@@ -15,6 +15,13 @@
       "when": 1794549988815,
       "tag": "0001_profiles_photos_preferences",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794594138109,
+      "tag": "0002_verification",
+      "breakpoints": true
     }
   ]
 }

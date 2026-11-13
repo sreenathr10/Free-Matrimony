@@ -36,6 +36,14 @@ flutter pub get
 flutter run --dart-define=API_URL=http://localhost:4000/v1
 ```
 
+Staff portals: give the first admin access from the command line, then add other staff from the admin portal (Staff and roles).
+
+```bash
+pnpm --filter @fm/api staff:add +971500000099 "Asha Admin" ADMIN
+```
+
+Roles are `ADMIN` (every portal), `SUPPORT_AGENT` and `VERIFIER`. In development, verification uses a mock KYC provider (`KYC_PROVIDER=mock`) that runs no real checks.
+
 In development, OTP codes are logged by the API and shown on the login screen, so no SMS provider is needed.
 
 ## Tests

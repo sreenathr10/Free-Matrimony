@@ -11,7 +11,7 @@ admin, customer service and verification portals. Estimates assume a small team 
 | --- | --- | --- | --- | --- |
 | M1 | Foundation | Monorepo, API core, family accounts and access, app shells | 1 week | Done (PR #1) |
 | M2 | Profiles | Families can create a full profile with photos and preferences | 2 weeks | Done (PR #2) |
-| M3 | Verification | Every profile is ID- and liveness-checked before going live | 3 weeks | Next |
+| M3 | Verification | Every profile is ID- and liveness-checked before going live | 3 weeks | In review (PR #4) |
 | M4 | Discovery | Search, daily AI picks, shortlist, privacy rules | 3 weeks | Not started |
 | M5 | Connections | Interests with family approvals, chat, safety, notifications | 3 weeks | Not started |
 | M6 | Payments | Plans, Razorpay, Stripe, store billing, per-country pricing | 2 weeks | Not started |
@@ -43,13 +43,16 @@ admin, customer service and verification portals. Estimates assume a small team 
 
 ## M3 Verification
 
-- [ ] Staff accounts with roles (admin, support agent, verifier) and portal login
-- [ ] KYC provider adapter (HyperVerge or IDfy for India, Onfido or Veriff abroad), mock in development
-- [ ] Selfie liveness and face match against profile photos
-- [ ] Government ID check (Aadhaar, passport, Emirates ID)
-- [ ] AI pre-screen: AI-generated faces, stock photos, duplicate accounts
-- [ ] Verification portal: queue, review screen, approve or reject with reasons, audit trail
-- [ ] Verified badge; profile goes LIVE on approval; member notified
+- [x] Staff accounts with roles (admin, support agent, verifier) and portal login; admins manage staff
+- [x] KYC provider adapter with a development mock (`KYC_PROVIDER=mock`)
+- [ ] Real vendors: HyperVerge or IDfy for India, Onfido or Veriff abroad
+- [x] Selfie and ID capture on web and mobile (Aadhaar, passport, Emirates ID, driving licence, national ID); EXIF stripped, files private
+- [ ] Selfie liveness and face match by a real vendor (mock returns placeholder results)
+- [x] Duplicate account check: same files or same name, birth date and gender
+- [ ] AI pre-screen for AI-generated and stock photos (needs a vendor)
+- [x] Verification portal: queue, flagged, completed, review screen, approve or reject with reasons, audit trail
+- [x] Verified badge; profile goes LIVE on approval; rejection reason shown to the family
+- [ ] Member notified by push, email or WhatsApp (moved to M5 notifications)
 
 ## M4 Discovery
 
