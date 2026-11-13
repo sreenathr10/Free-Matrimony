@@ -13,3 +13,4 @@ apps/mobile/build/
 apps/mobile/.flutter-plugins*
 apps/mobile/.packages
 .storage/
+*.tsbuildinfo
