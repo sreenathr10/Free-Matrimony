@@ -20,7 +20,13 @@ void main() {
     expect(humanize('THIRUVANANTHAPURAM'), 'Thiruvananthapuram');
   });
 
-  testWidgets('wizard requires a choice, then validates the basics', (tester) async {
+  testWidgets('wizard requires a choice, then validates the basics', (
+    tester,
+  ) async {
+    // A tall phone, so every choice and the Continue button fit on screen.
+    tester.view.physicalSize = const Size(1170, 3200);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
     await tester.pumpWidget(
       ProviderScope(
         overrides: [tokenStoreProvider.overrideWithValue(_NoTokens())],

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="fm-rose" x1="10" y1="22" x2="40" y2="52" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F0567A"/>
+      <stop offset="1" stop-color="#A81C42"/>
+    </linearGradient>
+    <linearGradient id="fm-gold" x1="26" y1="22" x2="54" y2="52" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8D57A"/>
+      <stop offset="1" stop-color="#CF8E14"/>
+    </linearGradient>
+  </defs>
+  <circle cx="25" cy="38" r="13" stroke="url(#fm-rose)" stroke-width="5"/>
+  <circle cx="39" cy="38" r="13" stroke="url(#fm-gold)" stroke-width="5"/>
+  <path d="M27.26 25.2A13 13 0 0 1 35.65 30.54" stroke="url(#fm-rose)" stroke-width="5"/>
+  <path d="M32 8l4.5 6L32 20l-4.5-6z" fill="url(#fm-gold)"/>
+</svg>

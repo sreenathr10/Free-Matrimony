@@ -4,6 +4,8 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../core/api.dart';
 import '../../core/enums.dart';
+import '../../core/theme.dart';
+import '../../core/widgets.dart';
 
 class CreateProfileScreen extends ConsumerStatefulWidget {
   const CreateProfileScreen({super.key});
@@ -28,6 +30,36 @@ class _CreateProfileScreenState extends ConsumerState<CreateProfileScreen> {
     'The basics',
     'Background',
     'Life today',
+  ];
+  static const _subtitles = [
+    'Families can create a profile together. The candidate always has the final say.',
+    'Their name stays private until an interest is accepted.',
+    'Helps matches from the right community and region find them.',
+    'Where they live, what they do, and a few words in their own voice.',
+  ];
+  static const _stepLabels = ['For', 'Basics', 'Background', 'Today'];
+  static const _who = [
+    ('SELF', 'Myself', 'I’m looking for a partner', Icons.person_rounded),
+    (
+      'MOTHER',
+      'My son or daughter',
+      'I’m their mother',
+      Icons.favorite_rounded,
+    ),
+    (
+      'FATHER',
+      'My son or daughter',
+      'I’m their father',
+      Icons.volunteer_activism_rounded,
+    ),
+    ('BROTHER', 'My sibling', 'I’m their brother', Icons.people_alt_rounded),
+    ('SISTER', 'My sibling', 'I’m their sister', Icons.people_alt_rounded),
+    (
+      'GUARDIAN',
+      'Someone in my care',
+      'I’m their guardian',
+      Icons.shield_rounded,
+    ),
   ];
 
   void _set(String k, String? v) =>
@@ -111,19 +143,25 @@ class _CreateProfileScreenState extends ConsumerState<CreateProfileScreen> {
     switch (_step) {
       case 0:
         return [
-          RadioGroup<String>(
-            groupValue: _form['createdAs'],
-            onChanged: (v) => _set('createdAs', v),
-            child: Column(
-              children: [
-                for (final e in createdAsOptions.entries)
-                  RadioListTile<String>(value: e.key, title: Text(e.value)),
-              ],
+          for (final (value, title, sub, icon) in _who)
+            _ChoiceTile(
+              selected: _form['createdAs'] == value,
+              title: title,
+              subtitle: sub,
+              icon: icon,
+              onTap: () => _set('createdAs', value),
             ),
-          ),
           if (_form['createdAs'] != null && _form['createdAs'] != 'SELF')
-            const Text(
-              'You can invite them afterwards. Their profile only goes live once they consent themselves.',
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: Surfaces.of(context).sunken,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Text(
+                'You can invite them afterwards. Their profile only goes live once they consent themselves.',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
             ),
         ];
       case 1:
@@ -204,34 +242,189 @@ class _CreateProfileScreenState extends ConsumerState<CreateProfileScreen> {
         ),
       ),
       body: SafeArea(
+        top: false,
         child: Form(
           key: _keys[_step],
           child: ListView(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 28),
             children: [
-              LinearProgressIndicator(
-                value: (_step + 1) / 4,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                _titles[_step],
-                style: t.headlineSmall?.copyWith(fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 20),
-              for (final f in _fields())
-                Padding(padding: const EdgeInsets.only(bottom: 16), child: f),
-              if (_error != null)
-                Text(
-                  _error!,
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+              _StepBar(step: _step, labels: _stepLabels),
+              const SizedBox(height: 26),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 280),
+                transitionBuilder: (c, a) => FadeTransition(
+                  opacity: a,
+                  child: SlideTransition(
+                    position: Tween(
+                      begin: const Offset(0.06, 0),
+                      end: Offset.zero,
+                    ).animate(a),
+                    child: c,
+                  ),
                 ),
-              const SizedBox(height: 8),
-              FilledButton(
-                onPressed: _busy ? null : _next,
-                child: Text(_step == 3 ? 'Create profile' : 'Continue'),
+                child: Column(
+                  key: ValueKey(_step),
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(_titles[_step], style: t.headlineMedium),
+                    const SizedBox(height: 6),
+                    Text(_subtitles[_step], style: t.bodyMedium),
+                    const SizedBox(height: 22),
+                    for (final f in _fields())
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: f,
+                      ),
+                  ],
+                ),
+              ),
+              if (_error != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Text(
+                    _error!,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 12),
+              GradientButton(
+                label: _step == 3 ? 'Create profile' : 'Continue',
+                icon: _step == 3
+                    ? Icons.check_rounded
+                    : Icons.arrow_forward_rounded,
+                loading: _busy,
+                onPressed: _next,
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StepBar extends StatelessWidget {
+  const _StepBar({required this.step, required this.labels});
+  final int step;
+  final List<String> labels;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = Surfaces.of(context);
+    return Row(
+      children: [
+        for (var i = 0; i < labels.length; i++)
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 350),
+                  curve: Curves.easeOutCubic,
+                  height: 6,
+                  margin: const EdgeInsets.only(right: 6),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(6),
+                    gradient: i <= step ? Brand.gradient : null,
+                    color: i <= step ? null : s.line,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  labels[i],
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: i == step ? s.ink : s.faint,
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _ChoiceTile extends StatelessWidget {
+  const _ChoiceTile({
+    required this.selected,
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.onTap,
+  });
+  final bool selected;
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = Surfaces.of(context);
+    final t = Theme.of(context).textTheme;
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    return Semantics(
+      selected: selected,
+      button: true,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 220),
+        decoration: BoxDecoration(
+          color: selected
+              ? (dark ? Brand.rose950.withValues(alpha: 0.6) : Brand.rose50)
+              : s.raised,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: selected ? Brand.rose400 : s.line,
+            width: selected ? 1.8 : 1.2,
+          ),
+          boxShadow: selected
+              ? [
+                  BoxShadow(
+                    color: Brand.rose.withValues(alpha: 0.18),
+                    blurRadius: 18,
+                    offset: const Offset(0, 6),
+                  ),
+                ]
+              : null,
+        ),
+        child: Material(
+          type: MaterialType.transparency,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(20),
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Row(
+                children: [
+                  IconTile(icon, size: 42, filled: selected),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(title, style: t.titleSmall),
+                        Text(subtitle, style: t.bodySmall),
+                      ],
+                    ),
+                  ),
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    child: Icon(
+                      selected
+                          ? Icons.check_circle_rounded
+                          : Icons.radio_button_unchecked_rounded,
+                      key: ValueKey(selected),
+                      color: selected ? Brand.rose600 : s.faint,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),

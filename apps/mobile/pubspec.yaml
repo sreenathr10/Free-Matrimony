@@ -20,6 +20,23 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
+  fonts:
+    - family: Jakarta
+      fonts:
+        - asset: assets/fonts/PlusJakartaSans.ttf
+    - family: Fraunces
+      fonts:
+        - asset: assets/fonts/Fraunces.ttf
+
+# App icon: `dart run flutter_launcher_icons` regenerates the iOS and Android icons from these files.
+flutter_launcher_icons:
+  image_path: assets/icon/app-icon.png
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  adaptive_icon_background: "#B01743"
+  adaptive_icon_foreground: assets/icon/app-icon-foreground.png

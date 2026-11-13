@@ -1,8 +1,10 @@
-import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../core/api.dart';
+import '../../core/theme.dart';
+import '../../core/widgets.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -18,7 +20,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _codeSent = false;
   bool _busy = false;
   String? _error;
-  String? _devHint;
+  String? _devCode;
 
   Future<void> _submit() async {
     setState(() {
@@ -33,9 +35,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         });
         setState(() {
           _codeSent = true;
-          _devHint = res['devCode'] == null
-              ? null
-              : 'Development code: ${res['devCode']}';
+          _devCode = res['devCode'] as String?;
         });
       } else {
         final res = await api.request('POST', '/auth/otp/verify', {
@@ -58,68 +58,157 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
+    final s = Surfaces.of(context);
     return Scaffold(
-      appBar: AppBar(),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(24),
-          children: [
-            Text(
-              _codeSent ? 'Enter your code' : 'Log in or sign up',
-              style: t.headlineMedium,
-            ),
-            const SizedBox(height: 6),
-            Text(
-              _codeSent
-                  ? 'Sent to ${_phone.text}'
-                  : 'We’ll send a 6-digit code to your phone.',
-            ),
-            const SizedBox(height: 24),
-            if (!_codeSent)
-              TextField(
-                controller: _phone,
-                keyboardType: TextInputType.phone,
-                autofillHints: const [AutofillHints.telephoneNumber],
-                decoration: const InputDecoration(labelText: 'Phone number'),
-              )
-            else ...[
-              TextField(
-                controller: _code,
-                keyboardType: TextInputType.number,
-                maxLength: 6,
-                autofillHints: const [AutofillHints.oneTimeCode],
-                decoration: const InputDecoration(
-                  labelText: '6-digit code',
-                  counterText: '',
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          onPressed: () => _codeSent
+              ? setState(() {
+                  _codeSent = false;
+                  _code.clear();
+                })
+              : context.go('/'),
+        ),
+      ),
+      body: MeshBackground(
+        child: SafeArea(
+          top: false,
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: IconTile(
+                  _codeSent ? Icons.sms_rounded : Icons.phone_iphone_rounded,
+                  size: 52,
+                  filled: true,
                 ),
               ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: _name,
-                decoration: const InputDecoration(
-                  labelText: 'Your name (new accounts)',
+              const SizedBox(height: 20),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 250),
+                child: Column(
+                  key: ValueKey(_codeSent),
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _codeSent ? 'Enter your code' : 'Log in or sign up',
+                      style: t.headlineMedium,
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      _codeSent
+                          ? 'We sent a 6-digit code to ${_phone.text}.'
+                          : 'We’ll send a 6-digit code to your phone. Include your country code.',
+                      style: t.bodyMedium,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 28),
+              if (!_codeSent)
+                TextField(
+                  controller: _phone,
+                  keyboardType: TextInputType.phone,
+                  autofillHints: const [AutofillHints.telephoneNumber],
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  decoration: const InputDecoration(
+                    labelText: 'Phone number',
+                    prefixIcon: Icon(Icons.call_rounded),
+                  ),
+                )
+              else ...[
+                TextField(
+                  controller: _code,
+                  keyboardType: TextInputType.number,
+                  maxLength: 6,
+                  autofocus: true,
+                  textAlign: TextAlign.center,
+                  autofillHints: const [AutofillHints.oneTimeCode],
+                  style: const TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 14,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: '••••••',
+                    hintStyle: TextStyle(color: s.faint, letterSpacing: 14),
+                    counterText: '',
+                  ),
+                ),
+                const SizedBox(height: 14),
+                TextField(
+                  controller: _name,
+                  textCapitalization: TextCapitalization.words,
+                  decoration: const InputDecoration(
+                    labelText: 'Your name (new accounts)',
+                    prefixIcon: Icon(Icons.person_rounded),
+                  ),
+                ),
+              ],
+              if (_devCode != null && _codeSent)
+                Container(
+                  margin: const EdgeInsets.only(top: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? const Color(0xFF3A2A0C)
+                        : Brand.gold100,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Text(
+                    'Development code: $_devCode',
+                    style: const TextStyle(
+                      color: Brand.gold600,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              if (_error != null)
+                Container(
+                  margin: const EdgeInsets.only(top: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.errorContainer.withValues(alpha: 0.6),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Text(
+                    _error!,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onErrorContainer,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 28),
+              GradientButton(
+                label: _codeSent ? 'Verify and continue' : 'Send code',
+                icon: Icons.arrow_forward_rounded,
+                loading: _busy,
+                onPressed: _submit,
+              ),
+              const SizedBox(height: 18),
+              Center(
+                child: Text(
+                  'By continuing you agree to our terms and privacy policy.',
+                  style: t.bodySmall,
+                  textAlign: TextAlign.center,
                 ),
               ),
             ],
-            if (_devHint != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 12),
-                child: Text(_devHint!),
-              ),
-            if (_error != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 12),
-                child: Text(
-                  _error!,
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
-                ),
-              ),
-            const SizedBox(height: 24),
-            FilledButton(
-              onPressed: _busy ? null : _submit,
-              child: Text(_codeSent ? 'Continue' : 'Send code'),
-            ),
-          ],
+          ),
         ),
       ),
     );

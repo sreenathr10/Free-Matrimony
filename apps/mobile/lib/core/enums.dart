@@ -79,14 +79,6 @@ const countries = {
   'SG': 'Singapore',
   'MY': 'Malaysia',
 };
-const createdAsOptions = {
-  'SELF': 'Myself',
-  'MOTHER': 'My son or daughter (I’m the mother)',
-  'FATHER': 'My son or daughter (I’m the father)',
-  'BROTHER': 'My sibling (I’m their brother)',
-  'SISTER': 'My sibling (I’m their sister)',
-  'GUARDIAN': 'Someone I’m a guardian for',
-};
 
 String humanize(String v) {
   final s = v.replaceAll('_', ' ').toLowerCase();
