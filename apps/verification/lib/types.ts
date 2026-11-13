@@ -59,6 +59,7 @@ export interface Detail {
     dateOfBirth: string;
     religion: string;
     community: string | null;
+    subCaste: string | null;
     maritalStatus: string;
     currentCountry: string;
     currentCity: string | null;

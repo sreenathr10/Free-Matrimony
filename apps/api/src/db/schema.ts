@@ -111,6 +111,8 @@ export const profiles = pgTable(
     maritalStatus: maritalStatus('marital_status').notNull().default('NEVER_MARRIED'),
     religion: religion('religion').notNull(),
     community: varchar('community', { length: 80 }),
+    subCaste: varchar('sub_caste', { length: 80 }),
+    casteNoBar: boolean('caste_no_bar').notNull().default(false),
     star: star('star'),
     nativeDistrict: keralaDistrict('native_district'),
     currentCountry: varchar('current_country', { length: 2 }).notNull(),
@@ -127,6 +129,7 @@ export const profiles = pgTable(
   (t) => [
     index('profiles_family_idx').on(t.familyId),
     index('profiles_search_idx').on(t.status, t.gender, t.religion, t.currentCountry),
+    index('profiles_community_idx').on(t.religion, t.community),
   ],
 );
 

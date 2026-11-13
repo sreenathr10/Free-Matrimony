@@ -22,6 +22,7 @@ import {
   KERALA_DISTRICTS,
   MARITAL_STATUSES,
   STARS,
+  COMMUNITY_LABEL,
   countryName,
   humanize,
   toOptions,
@@ -30,12 +31,15 @@ import { Badge, Button, Card, Field, Input, SectionTitle, Select, Textarea } fro
 import type { ReactNode } from 'react';
 import { api, ApiError } from '@/lib/api';
 import { VerificationCard } from './VerificationCard';
+import { CommunityFields } from './CommunityFields';
 import type { ProfileResponse } from '@/lib/types';
 
 const EDITABLE = [
   'fullName',
   'maritalStatus',
   'community',
+  'subCaste',
+  'casteNoBar',
   'star',
   'nativeDistrict',
   'currentCountry',
@@ -78,8 +82,10 @@ export function OverviewTab({ data, reload }: { data: ProfileResponse; reload: (
     const changes: Record<string, unknown> = {};
     for (const k of EDITABLE) {
       const before = profile[k] == null ? '' : String(profile[k]);
-      if (form[k] !== before && form[k] !== '')
-        changes[k] = k === 'heightCm' ? Number(form[k]) : form[k];
+      if (form[k] === before) continue;
+      if (k === 'casteNoBar') changes[k] = form[k] === 'true';
+      else if (k === 'subCaste') changes[k] = form[k] || null;
+      else if (form[k] !== '') changes[k] = k === 'heightCm' ? Number(form[k]) : form[k];
     }
     if (Object.keys(changes).length === 0) return setEditing(false);
     try {
@@ -99,7 +105,13 @@ export function OverviewTab({ data, reload }: { data: ProfileResponse; reload: (
     ['Age', `${age(profile.dateOfBirth)} years`, <CalendarDays key="i" className="h-4 w-4" />],
     ['Marital status', humanize(profile.maritalStatus), <Heart key="i" className="h-4 w-4" />],
     ['Religion', humanize(profile.religion), <Church key="i" className="h-4 w-4" />],
-    ['Community', profile.community, <Users key="i" className="h-4 w-4" />],
+    [
+      COMMUNITY_LABEL[profile.religion as keyof typeof COMMUNITY_LABEL] ?? 'Community',
+      profile.community &&
+        [profile.community, profile.subCaste].filter(Boolean).join(' · ') +
+          (profile.casteNoBar ? ' (caste no bar)' : ''),
+      <Users key="i" className="h-4 w-4" />,
+    ],
     ['Star', profile.star && humanize(profile.star), <Star key="i" className="h-4 w-4" />],
     [
       'Native district',
@@ -200,9 +212,22 @@ export function OverviewTab({ data, reload }: { data: ProfileResponse; reload: (
                 options={toOptions(MARITAL_STATUSES)}
               />
             </Field>
-            <Field label="Community">
-              <Input value={form.community} onChange={set('community')} />
-            </Field>
+            <CommunityFields
+              religion={profile.religion}
+              value={{
+                community: form.community,
+                subCaste: form.subCaste,
+                casteNoBar: form.casteNoBar === 'true',
+              }}
+              onChange={(v) =>
+                setForm((f) => ({
+                  ...f,
+                  community: v.community,
+                  subCaste: v.subCaste,
+                  casteNoBar: String(v.casteNoBar),
+                }))
+              }
+            />
             <Field label="Star">
               <Select
                 value={form.star}

@@ -6,3 +6,4 @@ export * from './preferences';
 export * from './completeness';
 export * from './labels';
 export * from './verification';
+export * from './community';

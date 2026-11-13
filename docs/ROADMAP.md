@@ -37,6 +37,7 @@ admin, customer service and verification portals. Estimates assume a small team 
 - [x] Photo upload to object storage with presigned URLs; up to 8 photos, one primary
 - [x] Blurred copy of every photo, shown until an interest is accepted
 - [x] Profile completeness score with next-step hints
+- [x] Religion, caste or denomination, and sub-caste picked from a shared list (about 140 communities, Kerala first), with "Other" and caste no bar
 - [x] Web: profile creation wizard, profile editor, family members and access screen
 - [x] Mobile: profile creation wizard and profile view with photo upload
 - [x] OpenAPI docs at `/docs` for every endpoint, so every app builds against the same API

@@ -1,6 +1,7 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { and, eq, inArray } from 'drizzle-orm';
 import {
+  normalizeCommunityFields,
   DEFAULT_ROLE_FOR_RELATION,
   profileCompleteness,
   type CreateProfileInput,
@@ -20,7 +21,8 @@ export class ProfilesService {
   ) {}
 
   async create(userId: string, input: CreateProfileInput) {
-    const { createdAs, ...fields } = input;
+    const { createdAs, ...raw } = input;
+    const fields = normalizeCommunityFields(raw, raw.religion);
     const isSelf = createdAs === 'SELF';
 
     const profile = await this.db.transaction(async (tx) => {
@@ -82,8 +84,23 @@ export class ProfilesService {
     };
   }
 
+  /** Canonical caste and sub-caste names, so search matches "nair" and "Nair". */
+  async normalizeCommunity(profileId: string, input: UpdateProfileInput): Promise<UpdateProfileInput> {
+    if (input.community === undefined && input.subCaste === undefined) return input;
+    let religion: string | undefined = input.religion;
+    if (!religion) {
+      const [row] = await this.db.select({ religion: profiles.religion }).from(profiles).where(eq(profiles.id, profileId));
+      religion = row?.religion;
+    }
+    const out = normalizeCommunityFields(input, religion);
+    // A new caste with no sub-caste given clears the old sub-caste.
+    if (input.community !== undefined && input.subCaste === undefined) out.subCaste = null;
+    return out;
+  }
+
   async update(userId: string, profileId: string, input: UpdateProfileInput) {
     await this.access.require(profileId, userId, 'EDIT_PROFILE');
+    input = await this.normalizeCommunity(profileId, input);
     const [profile] = await this.db.update(profiles).set(input).where(eq(profiles.id, profileId)).returning();
     await this.audit.record('profile.updated', {
       actorUserId: userId,

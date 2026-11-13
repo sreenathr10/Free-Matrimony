@@ -6,6 +6,7 @@ import '../../core/api.dart';
 import '../../core/enums.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
+import 'community_picker.dart';
 
 class CreateProfileScreen extends ConsumerStatefulWidget {
   const CreateProfileScreen({super.key});
@@ -81,6 +82,7 @@ class _CreateProfileScreenState extends ConsumerState<CreateProfileScreen> {
     setState(() => _busy = true);
     try {
       final body = <String, dynamic>{..._form};
+      if (body['casteNoBar'] != null) body['casteNoBar'] = true;
       if (body['heightCm'] != null) {
         body['heightCm'] = int.tryParse(body['heightCm']);
       }
@@ -203,8 +205,34 @@ class _CreateProfileScreenState extends ConsumerState<CreateProfileScreen> {
         ];
       case 2:
         return [
-          _dropdown('religion', 'Religion', _opts(religions), required: true),
-          _text('community', 'Community'),
+          DropdownButtonFormField<String>(
+            initialValue: _form['religion'],
+            isExpanded: true,
+            decoration: const InputDecoration(labelText: 'Religion'),
+            items: [
+              for (final o in _opts(religions))
+                DropdownMenuItem(value: o.key, child: Text(o.value)),
+            ],
+            validator: _required,
+            onChanged: (v) => setState(() {
+              _form['religion'] = v ?? '';
+              _form.remove('community');
+              _form.remove('subCaste');
+            }),
+          ),
+          CommunityFields(
+            religion: _form['religion'],
+            community: _form['community'],
+            subCaste: _form['subCaste'],
+            casteNoBar: _form['casteNoBar'] == 'true',
+            onChanged: ({community, subCaste, casteNoBar}) {
+              if (community != null) _set('community', community);
+              if (subCaste != null) _set('subCaste', subCaste);
+              if (casteNoBar != null) {
+                _set('casteNoBar', casteNoBar ? 'true' : null);
+              }
+            },
+          ),
           _dropdown('star', 'Star (nakshatra)', _opts(stars)),
           _dropdown(
             'nativeDistrict',
