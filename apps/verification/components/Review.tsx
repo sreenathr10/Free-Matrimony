@@ -233,7 +233,7 @@ export function Review({ id }: { id: string }) {
                   ['Age', `${age(p.dateOfBirth)} (${p.dateOfBirth})`],
                   ['Gender', humanize(p.gender)],
                   ['Religion', humanize(p.religion)],
-                  ['Community', p.community],
+                  ['Community', [p.community, p.subCaste].filter(Boolean).join(' · ') || null],
                   ['Marital status', humanize(p.maritalStatus)],
                   ['Native district', p.nativeDistrict && humanize(p.nativeDistrict)],
                   [

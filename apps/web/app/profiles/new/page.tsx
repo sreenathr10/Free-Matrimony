@@ -24,6 +24,7 @@ import {
 } from '@fm/shared';
 import { Button, Card, ChoiceCard, Field, Input, Select, Textarea, buttonClass, cn } from '@fm/ui';
 import { AppHeader } from '@/components/AppHeader';
+import { CommunityFields } from '@/components/CommunityFields';
 import { api, ApiError } from '@/lib/api';
 
 type Form = Record<string, string>;
@@ -84,7 +85,7 @@ const steps = [
     label: 'Background',
     title: 'Family background',
     sub: 'Helps matches from the right community and region find them.',
-    fields: ['religion', 'community', 'star', 'nativeDistrict'],
+    fields: ['religion', 'community', 'subCaste', 'casteNoBar', 'star', 'nativeDistrict'],
   },
   {
     label: 'Today',
@@ -98,7 +99,7 @@ function toPayload(f: Form) {
   const out: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(f)) {
     if (v === '') continue;
-    out[k] = k === 'heightCm' ? Number(v) : v;
+    out[k] = k === 'heightCm' ? Number(v) : k === 'casteNoBar' ? v === 'true' : v;
   }
   return out;
 }
@@ -268,18 +269,35 @@ export default function NewProfile() {
                   <Field label="Religion" error={errors.religion}>
                     <Select
                       value={form.religion ?? ''}
-                      onChange={set('religion')}
+                      onChange={(e) =>
+                        setForm((f) => ({
+                          ...f,
+                          religion: e.target.value,
+                          community: '',
+                          subCaste: '',
+                        }))
+                      }
                       placeholder="Select"
                       options={toOptions(RELIGIONS)}
                     />
                   </Field>
-                  <Field
-                    label="Community"
-                    hint="For example Nair, Ezhava, Syrian Catholic, Sunni"
-                    error={errors.community}
-                  >
-                    <Input value={form.community ?? ''} onChange={set('community')} />
-                  </Field>
+                  <CommunityFields
+                    religion={form.religion}
+                    errors={errors}
+                    value={{
+                      community: form.community ?? '',
+                      subCaste: form.subCaste ?? '',
+                      casteNoBar: form.casteNoBar === 'true',
+                    }}
+                    onChange={(v) =>
+                      setForm((f) => ({
+                        ...f,
+                        community: v.community,
+                        subCaste: v.subCaste,
+                        casteNoBar: v.casteNoBar ? 'true' : '',
+                      }))
+                    }
+                  />
                   <Field label="Star (nakshatra)" hint="Optional" error={errors.star}>
                     <Select
                       value={form.star ?? ''}

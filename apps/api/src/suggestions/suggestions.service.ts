@@ -1,6 +1,6 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { and, desc, eq } from 'drizzle-orm';
-import type { ReviewSuggestionInput, UpdateProfileInput } from '@fm/shared';
+import { normalizeCommunityFields, type ReviewSuggestionInput, type UpdateProfileInput } from '@fm/shared';
 import { AuditService } from '../audit/audit.service';
 import { DB, type Database } from '../db/db.module';
 import { editSuggestions, profiles, users } from '../db/schema';
@@ -18,6 +18,11 @@ export class SuggestionsService {
   async create(userId: string, profileId: string, changes: UpdateProfileInput) {
     await this.access.require(profileId, userId, 'EDIT_PROFILE', 'SUGGEST');
     if (Object.keys(changes).length === 0) throw new BadRequestException('Suggest at least one change');
+    if (changes.community !== undefined || changes.subCaste !== undefined) {
+      const [p] = await this.db.select({ religion: profiles.religion }).from(profiles).where(eq(profiles.id, profileId));
+      changes = normalizeCommunityFields(changes, changes.religion ?? p?.religion);
+      if (changes.community !== undefined && changes.subCaste === undefined) changes.subCaste = null;
+    }
     const [row] = await this.db
       .insert(editSuggestions)
       .values({ profileId, suggestedById: userId, changes })

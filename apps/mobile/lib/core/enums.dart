@@ -96,3 +96,13 @@ const idDocumentTypes = {
 
 /// Passports have one page to photograph; other cards need front and back.
 bool idNeedsBack(String type) => type != 'PASSPORT';
+
+/// What each religion calls the community field (mirrors COMMUNITY_LABEL in @fm/shared).
+String communityLabel(String? religion) => switch (religion) {
+  'HINDU' || 'SIKH' => 'Caste',
+  'CHRISTIAN' => 'Denomination',
+  'MUSLIM' => 'Sect or community',
+  'JAIN' => 'Sect',
+  'BUDDHIST' => 'School',
+  _ => 'Community',
+};

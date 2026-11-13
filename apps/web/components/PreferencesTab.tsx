@@ -20,7 +20,8 @@ import {
   STARS,
   toOptions,
 } from '@fm/shared';
-import { Button, Card, ChipPicker, Field, Input, Textarea, Toggle } from '@fm/ui';
+import { Button, Card, ChipPicker, Combobox, Field, Input, Textarea, Toggle } from '@fm/ui';
+import { communityOptions } from './CommunityFields';
 import { api, ApiError } from '@/lib/api';
 
 interface Prefs {
@@ -36,6 +37,18 @@ interface Prefs {
   countries: string[];
   educationNotes?: string | null;
   requirePorutham: boolean;
+}
+
+/** Options for the chosen religions (all religions when none is chosen), grouped by religion when there are several. */
+function communityOptionsFor(religions: string[]) {
+  if (religions.length === 1) return communityOptions(religions[0]);
+  if (religions.length === 0) return communityOptions(null, true);
+  return religions.flatMap((r) =>
+    communityOptions(r).map((o) => ({
+      ...o,
+      group: `${r.charAt(0)}${r.slice(1).toLowerCase()}${o.group === 'Kerala' ? '' : ' · elsewhere in India'}`,
+    })),
+  );
 }
 
 const empty: Prefs = {
@@ -60,7 +73,6 @@ export function PreferencesTab({
   onChange: () => void;
 }) {
   const [p, setP] = useState<Prefs>(empty);
-  const [communities, setCommunities] = useState('');
   const [msg, setMsg] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -68,7 +80,6 @@ export function PreferencesTab({
     api<Prefs | Record<string, never>>(`/profiles/${profileId}/preferences`).then((r) => {
       if ('ageMin' in r) {
         setP(r as Prefs);
-        setCommunities((r as Prefs).communities.join(', '));
       }
     });
   }, [profileId]);
@@ -84,10 +95,6 @@ export function PreferencesTab({
       heightMinCm: p.heightMinCm ?? undefined,
       heightMaxCm: p.heightMaxCm ?? undefined,
       educationNotes: p.educationNotes || undefined,
-      communities: communities
-        .split(',')
-        .map((c) => c.trim())
-        .filter(Boolean),
     };
     try {
       await api(`/profiles/${profileId}/preferences`, {
@@ -162,8 +169,24 @@ export function PreferencesTab({
               onChange={(v) => update('religions', v)}
             />
           </Field>
-          <Field label="Communities" hint="Separate with commas">
-            <Input value={communities} onChange={(e) => setCommunities(e.target.value)} />
+          <Field
+            label="Castes or denominations"
+            hint={
+              p.communities.length
+                ? 'Only these will be suggested'
+                : 'Empty means caste no bar. Search by name, sub-caste or spelling.'
+            }
+          >
+            <Combobox
+              multiple
+              aria-label="Castes or denominations"
+              options={communityOptionsFor(p.religions)}
+              value={p.communities}
+              onChange={(v) => update('communities', v)}
+              placeholder="Any caste"
+              allowCustom
+              customLabel={(t) => `Add “${t}”`}
+            />
           </Field>
           <Field label="Marital status">
             <ChipPicker

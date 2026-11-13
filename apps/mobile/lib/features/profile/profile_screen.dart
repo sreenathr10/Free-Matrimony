@@ -165,7 +165,14 @@ class _ProfileBodyState extends ConsumerState<_ProfileBody> {
         'Religion',
         humanize(p['religion'] as String),
       ),
-      (Icons.groups_rounded, 'Community', p['community'] as String?),
+      (
+        Icons.groups_rounded,
+        communityLabel(p['religion'] as String?),
+        p['community'] == null
+            ? null
+            : [p['community'], p['subCaste']].whereType<String>().join(' · ') +
+                  (p['casteNoBar'] == true ? ' (caste no bar)' : ''),
+      ),
       (
         Icons.star_rounded,
         'Star',

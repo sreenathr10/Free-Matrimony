@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
-import type { PartnerPreferences } from '@fm/shared';
+import { normalizeCommunity, type PartnerPreferences } from '@fm/shared';
 import { AuditService } from '../audit/audit.service';
 import { DB, type Database } from '../db/db.module';
 import { partnerPreferences } from '../db/schema';
@@ -22,7 +22,9 @@ export class PreferencesService {
 
   async set(userId: string, profileId: string, prefs: PartnerPreferences) {
     await this.access.require(profileId, userId, 'EDIT_PROFILE');
-    const values = { ...prefs, updatedById: userId };
+    const religion = prefs.religions.length === 1 ? prefs.religions[0] : undefined;
+    const communities = [...new Set(prefs.communities.map((c) => normalizeCommunity(c, religion)))];
+    const values = { ...prefs, communities, updatedById: userId };
     const [row] = await this.db
       .insert(partnerPreferences)
       .values({ profileId, ...values })

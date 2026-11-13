@@ -48,7 +48,11 @@ export const profileFieldsSchema = z.object({
     }, `Must be at least ${MIN_AGE} years old`),
   maritalStatus: z.enum(MARITAL_STATUSES).default('NEVER_MARRIED'),
   religion: z.enum(RELIGIONS),
+  /** Caste, denomination or sect; see COMMUNITIES. Typed values outside the list are kept. */
   community: z.string().trim().max(80).optional(),
+  subCaste: z.string().trim().max(80).nullable().optional(),
+  /** The candidate is open to proposals from any caste. */
+  casteNoBar: z.boolean().optional(),
   star: z.enum(STARS).optional(),
   nativeDistrict: z.enum(KERALA_DISTRICTS).optional(),
   currentCountry: z.string().length(2).toUpperCase().describe('ISO 3166-1 alpha-2'),

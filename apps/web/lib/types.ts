@@ -8,6 +8,8 @@ export interface Profile {
   maritalStatus: string;
   religion: string;
   community: string | null;
+  subCaste: string | null;
+  casteNoBar: boolean;
   star: string | null;
   nativeDistrict: string | null;
   currentCountry: string;
