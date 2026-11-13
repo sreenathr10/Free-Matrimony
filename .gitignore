@@ -12,3 +12,4 @@ apps/mobile/.dart_tool/
 apps/mobile/build/
 apps/mobile/.flutter-plugins*
 apps/mobile/.packages
+.storage/

@@ -2,12 +2,13 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { and, eq, inArray } from 'drizzle-orm';
 import {
   DEFAULT_ROLE_FOR_RELATION,
+  profileCompleteness,
   type CreateProfileInput,
   type UpdateProfileInput,
 } from '@fm/shared';
 import { AuditService } from '../audit/audit.service';
 import { DB, type Database } from '../db/db.module';
-import { families, profileMembers, profiles } from '../db/schema';
+import { families, partnerPreferences, profileMembers, profilePhotos, profiles } from '../db/schema';
 import { AccessService } from './access.service';
 
 @Injectable()
@@ -66,7 +67,19 @@ export class ProfilesService {
   async get(userId: string, profileId: string) {
     const member = await this.access.membership(profileId, userId);
     const [profile] = await this.db.select().from(profiles).where(eq(profiles.id, profileId));
-    return { profile, access: this.access.describe(member) };
+    const photos = await this.db
+      .select({ id: profilePhotos.id })
+      .from(profilePhotos)
+      .where(and(eq(profilePhotos.profileId, profileId), eq(profilePhotos.status, 'READY')));
+    const [prefs] = await this.db
+      .select({ id: partnerPreferences.profileId })
+      .from(partnerPreferences)
+      .where(eq(partnerPreferences.profileId, profileId));
+    return {
+      profile,
+      access: this.access.describe(member),
+      completeness: profileCompleteness({ profile, photoCount: photos.length, hasPreferences: !!prefs }),
+    };
   }
 
   async update(userId: string, profileId: string, input: UpdateProfileInput) {
