@@ -18,6 +18,7 @@ export interface Profile {
   about: string | null;
   status: string;
   candidateConsentAt: string | null;
+  verifiedAt: string | null;
 }
 
 export interface Access {

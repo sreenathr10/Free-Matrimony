@@ -105,23 +105,6 @@ export class ProfilesService {
     return profile;
   }
 
-  /** Sends the profile to the verification team. */
-  async submitForVerification(userId: string, profileId: string) {
-    await this.access.require(profileId, userId, 'EDIT_PROFILE');
-    const [current] = await this.db.select().from(profiles).where(eq(profiles.id, profileId));
-    if (!current.candidateConsentAt) {
-      throw new BadRequestException('The candidate must give consent before the profile is submitted');
-    }
-    if (current.status !== 'DRAFT') throw new BadRequestException(`Profile is already ${current.status}`);
-    const [profile] = await this.db
-      .update(profiles)
-      .set({ status: 'PENDING_VERIFICATION' })
-      .where(eq(profiles.id, profileId))
-      .returning();
-    await this.audit.record('profile.submitted', { actorUserId: userId, profileId });
-    return profile;
-  }
-
   /** Hide or show a live profile. Candidate only. */
   async setHidden(userId: string, profileId: string, hidden: boolean) {
     await this.access.require(profileId, userId, 'MANAGE_PRIVACY');

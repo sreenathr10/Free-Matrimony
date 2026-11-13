@@ -84,3 +84,15 @@ String humanize(String v) {
   final s = v.replaceAll('_', ' ').toLowerCase();
   return s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
 }
+
+/// Government IDs accepted for verification (packages/shared/src/verification.ts).
+const idDocumentTypes = {
+  'AADHAAR': 'Aadhaar card',
+  'PASSPORT': 'Passport',
+  'EMIRATES_ID': 'Emirates ID',
+  'DRIVING_LICENCE': 'Driving licence',
+  'NATIONAL_ID': 'Other national ID',
+};
+
+/// Passports have one page to photograph; other cards need front and back.
+bool idNeedsBack(String type) => type != 'PASSPORT';

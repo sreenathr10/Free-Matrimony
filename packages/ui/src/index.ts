@@ -9,3 +9,4 @@ export * from './ProgressRing';
 export * from './Reveal';
 export * from './StaffShell';
 export * from './Tabs';
+export * from './StaffGate';

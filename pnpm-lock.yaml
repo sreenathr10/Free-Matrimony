@@ -20,6 +20,9 @@ importers:
 
   apps/admin:
     dependencies:
+      '@fm/client':
+        specifier: workspace:*
+        version: link:../../packages/client
       '@fm/shared':
         specifier: workspace:*
         version: link:../../packages/shared
@@ -154,6 +157,9 @@ importers:
 
   apps/support:
     dependencies:
+      '@fm/client':
+        specifier: workspace:*
+        version: link:../../packages/client
       '@fm/shared':
         specifier: workspace:*
         version: link:../../packages/shared
@@ -197,6 +203,9 @@ importers:
 
   apps/verification:
     dependencies:
+      '@fm/client':
+        specifier: workspace:*
+        version: link:../../packages/client
       '@fm/shared':
         specifier: workspace:*
         version: link:../../packages/shared
@@ -240,6 +249,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@fm/client':
+        specifier: workspace:*
+        version: link:../../packages/client
       '@fm/shared':
         specifier: workspace:*
         version: link:../../packages/shared
@@ -281,6 +293,12 @@ importers:
         specifier: ^5.8.3
         version: 5.9.3
 
+  packages/client:
+    devDependencies:
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+
   packages/shared:
     dependencies:
       zod:
@@ -296,6 +314,12 @@ importers:
 
   packages/ui:
     dependencies:
+      '@fm/client':
+        specifier: workspace:*
+        version: link:../client
+      '@fm/shared':
+        specifier: workspace:*
+        version: link:../shared
       '@fontsource-variable/fraunces':
         specifier: ^5.2.5
         version: 5.3.0

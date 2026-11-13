@@ -6,9 +6,10 @@ import { DbModule } from './db/db.module';
 import { HealthController } from './health.controller';
 import { ProfilesModule } from './profiles/profiles.module';
 import { StorageModule } from './storage/storage.module';
+import { VerificationModule } from './verification/verification.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), DbModule, AuditModule, AuthModule, StorageModule, ProfilesModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), DbModule, AuditModule, AuthModule, StorageModule, ProfilesModule, VerificationModule],
   controllers: [HealthController],
 })
 export class AppModule {}

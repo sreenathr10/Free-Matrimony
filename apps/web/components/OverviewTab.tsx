@@ -2,7 +2,6 @@
 
 import {
   ArrowRight,
-  BadgeCheck,
   CalendarDays,
   Church,
   GraduationCap,
@@ -30,6 +29,7 @@ import {
 import { Badge, Button, Card, Field, Input, SectionTitle, Select, Textarea } from '@fm/ui';
 import type { ReactNode } from 'react';
 import { api, ApiError } from '@/lib/api';
+import { VerificationCard } from './VerificationCard';
 import type { ProfileResponse } from '@/lib/types';
 
 const EDITABLE = [
@@ -95,16 +95,6 @@ export function OverviewTab({ data, reload }: { data: ProfileResponse; reload: (
     }
   }
 
-  async function action(path: string) {
-    setMsg(null);
-    try {
-      await api(`/profiles/${profile.id}/${path}`, { method: 'POST' });
-      reload();
-    } catch (e) {
-      setMsg(e instanceof ApiError ? e.message : 'Something went wrong');
-    }
-  }
-
   const rows: [string, string | null, ReactNode][] = [
     ['Age', `${age(profile.dateOfBirth)} years`, <CalendarDays key="i" className="h-4 w-4" />],
     ['Marital status', humanize(profile.maritalStatus), <Heart key="i" className="h-4 w-4" />],
@@ -155,41 +145,7 @@ export function OverviewTab({ data, reload }: { data: ProfileResponse; reload: (
         </Card>
       )}
 
-      {profile.status === 'DRAFT' && (
-        <Card
-          variant="feature"
-          className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
-        >
-          <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-brand-500/10 blur-2xl" />
-          <div className="relative flex gap-4">
-            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-brand-gradient text-white shadow-glow">
-              {profile.candidateConsentAt ? (
-                <ShieldCheck className="h-5 w-5" />
-              ) : (
-                <BadgeCheck className="h-5 w-5" />
-              )}
-            </span>
-            <div>
-              <h2 className="font-semibold">
-                {profile.candidateConsentAt ? 'Ready for verification' : 'Waiting for consent'}
-              </h2>
-              <p className="text-sm text-ink-muted">
-                {profile.candidateConsentAt
-                  ? 'Submit the profile to our verification team. It goes live once ID and selfie checks pass.'
-                  : access.role === 'CANDIDATE'
-                    ? 'Confirm that you agree to this profile being shown to matches.'
-                    : 'The candidate must join and give consent before the profile can go live. Invite them from the Family tab.'}
-              </p>
-            </div>
-          </div>
-          {access.role === 'CANDIDATE' && !profile.candidateConsentAt && (
-            <Button onClick={() => action('consent')}>I consent</Button>
-          )}
-          {profile.candidateConsentAt && canEdit && (
-            <Button onClick={() => action('submit')}>Submit for verification</Button>
-          )}
-        </Card>
-      )}
+      <VerificationCard data={data} reload={reload} />
 
       <Card>
         <div className="flex items-center justify-between">

@@ -62,11 +62,6 @@ export class ProfilesController {
     return this.profiles.consent(user.sub, id);
   }
 
-  @Post(':id/submit')
-  submit(@CurrentUser() user: JwtPayload, @Param('id', ParseUUIDPipe) id: string) {
-    return this.profiles.submitForVerification(user.sub, id);
-  }
-
   @Post(':id/visibility')
   @ApiZodBody(visibilitySchema)
   visibility(

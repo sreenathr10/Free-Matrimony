@@ -1,11 +1,13 @@
 'use client';
 
-import { Bell, Menu, Search, X } from 'lucide-react';
+import { STAFF_ROLE_LABELS } from '@fm/shared';
+import { Bell, LogOut, Menu, Search, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useState, type ReactNode } from 'react';
 import { Avatar } from './Avatar';
 import { cn } from './cn';
 import { Logo } from './Logo';
+import { useOptionalStaff } from './StaffGate';
 
 export interface NavItem {
   href: string;
@@ -44,14 +46,27 @@ function Sidebar({ portal, nav, active, onNavigate }: { portal: string; nav: Nav
           );
         })}
       </nav>
-      <div className="mt-6 rounded-2xl border border-line bg-surface-sunken p-3">
-        <div className="flex items-center gap-3">
-          <Avatar name="Staff Member" size={36} />
-          <div className="min-w-0 text-sm">
-            <div className="truncate font-semibold">Staff member</div>
-            <div className="truncate text-xs text-ink-muted">Sign-in arrives in M3</div>
-          </div>
+      <StaffCard />
+    </div>
+  );
+}
+
+function StaffCard() {
+  const ctx = useOptionalStaff();
+  const name = ctx?.staff.name ?? ctx?.staff.phone ?? 'Staff member';
+  return (
+    <div className="mt-6 rounded-2xl border border-line bg-surface-sunken p-3">
+      <div className="flex items-center gap-3">
+        <Avatar name={name} size={36} />
+        <div className="min-w-0 flex-1 text-sm">
+          <div className="truncate font-semibold">{name}</div>
+          <div className="truncate text-xs text-ink-muted">{ctx ? STAFF_ROLE_LABELS[ctx.staff.role] : 'Not signed in'}</div>
         </div>
+        {ctx && (
+          <button onClick={ctx.signOut} className="grid h-8 w-8 place-items-center rounded-lg text-ink-muted hover:bg-surface-raised hover:text-ink" aria-label="Sign out" title="Sign out">
+            <LogOut className="h-4 w-4" />
+          </button>
+        )}
       </div>
     </div>
   );
@@ -103,7 +118,7 @@ export function StaffShell({ portal, nav, active, title, actions, children }: { 
               <Bell className="h-5 w-5" />
               <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-brand-500 ring-2 ring-surface-raised" />
             </button>
-            <Avatar name="Staff Member" size={34} />
+            <HeaderAvatar />
           </div>
         </header>
         <main className="mx-auto max-w-7xl p-4 md:p-8">
@@ -118,6 +133,11 @@ export function StaffShell({ portal, nav, active, title, actions, children }: { 
       </div>
     </div>
   );
+}
+
+function HeaderAvatar() {
+  const ctx = useOptionalStaff();
+  return <Avatar name={ctx?.staff.name ?? ctx?.staff.phone ?? 'Staff'} size={34} />;
 }
 
 type Tone = 'brand' | 'gold' | 'verified' | 'neutral';

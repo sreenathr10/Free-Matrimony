@@ -8,6 +8,7 @@ import '../../core/api.dart';
 import '../../core/enums.dart';
 import '../../core/theme.dart';
 import '../../core/widgets.dart';
+import 'verification_card.dart';
 
 class ProfileData {
   ProfileData(this.json, this.photos);
@@ -130,21 +131,6 @@ class _ProfileBodyState extends ConsumerState<_ProfileBody> {
     }
   }
 
-  Future<void> _post(String path) async {
-    try {
-      await ref
-          .read(apiProvider)
-          .request('POST', '/profiles/${widget.id}/$path');
-      ref.invalidate(profileProvider(widget.id));
-    } on ApiException catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(e.message)));
-      }
-    }
-  }
-
   int _age(String dob) {
     final d = DateTime.parse(dob);
     final now = DateTime.now();
@@ -259,7 +245,9 @@ class _ProfileBodyState extends ConsumerState<_ProfileBody> {
                   ),
                   const SizedBox(width: 8),
                   Pill(
-                    humanize(p['status'] as String),
+                    p['verifiedAt'] != null
+                        ? 'Verified'
+                        : humanize(p['status'] as String),
                     tone: live ? PillTone.verified : PillTone.neutral,
                     icon: live ? Icons.verified_rounded : null,
                   ),
@@ -355,55 +343,13 @@ class _ProfileBodyState extends ConsumerState<_ProfileBody> {
                 ),
               ),
 
-              if (p['status'] == 'DRAFT') ...[
-                const SizedBox(height: 12),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(18),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            IconTile(
-                              p['candidateConsentAt'] == null
-                                  ? Icons.how_to_reg_rounded
-                                  : Icons.verified_user_rounded,
-                              filled: true,
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                p['candidateConsentAt'] == null
-                                    ? 'Waiting for consent'
-                                    : 'Ready for verification',
-                                style: t.titleMedium,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        if (d.isCandidate && p['candidateConsentAt'] == null)
-                          GradientButton(
-                            label: 'I consent to this profile',
-                            onPressed: () => _post('consent'),
-                          )
-                        else if (p['candidateConsentAt'] != null && d.canEdit)
-                          GradientButton(
-                            label: 'Submit for verification',
-                            icon: Icons.send_rounded,
-                            onPressed: () => _post('submit'),
-                          )
-                        else
-                          Text(
-                            'The candidate must join and give consent before this profile can go live.',
-                            style: t.bodyMedium,
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+              const SizedBox(height: 12),
+              VerificationCard(
+                profile: p,
+                isCandidate: d.isCandidate,
+                canSubmit: d.canEdit,
+                onChanged: () => ref.invalidate(profileProvider(widget.id)),
+              ),
 
               const SizedBox(height: 12),
               SectionCard(
