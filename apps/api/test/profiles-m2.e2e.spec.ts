@@ -1,4 +1,5 @@
 import sharp from 'sharp';
+import { buildOpenApi } from '../src/common/openapi';
 import { createTestApp, sampleProfile } from './helpers';
 
 const jpeg = (w: number, h: number) =>
@@ -207,5 +208,12 @@ describe('Profiles: preferences, suggestions, photos (e2e)', () => {
     expect(res.body.completeness.percent).toBeGreaterThan(50);
     expect(res.body.completeness.nextSteps.map((s: { key: string }) => s.key)).not.toContain('photo');
     expect(res.body.completeness.nextSteps.map((s: { key: string }) => s.key)).not.toContain('preferences');
+  });
+
+  it('documents every route in the OpenAPI spec, with request bodies from the Zod schemas', () => {
+    const doc = buildOpenApi(t.app);
+    expect(Object.keys(doc.paths)).toEqual(expect.arrayContaining(['/v1/profiles', '/v1/profiles/{id}/photos/uploads', '/v1/profiles/{id}/preferences']));
+    const body = doc.paths['/v1/profiles']!.post!.requestBody as { content: Record<string, { schema: { required: string[] } }> };
+    expect(body.content['application/json'].schema.required).toEqual(expect.arrayContaining(['fullName', 'createdAs']));
   });
 });

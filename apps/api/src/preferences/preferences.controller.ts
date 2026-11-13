@@ -1,4 +1,6 @@
 import { Body, Controller, Get, Param, ParseUUIDPipe, Put, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiZodBody } from '../common/openapi';
 import { partnerPreferencesSchema, type PartnerPreferences } from '@fm/shared';
 import type { JwtPayload } from '../auth/auth.service';
 import { CurrentUser } from '../auth/current-user.decorator';
@@ -6,8 +8,10 @@ import { JwtGuard } from '../auth/jwt.guard';
 import { ZodPipe } from '../common/zod.pipe';
 import { PreferencesService } from './preferences.service';
 
+@ApiTags('Partner preferences')
 @Controller('profiles/:id/preferences')
 @UseGuards(JwtGuard)
+@ApiBearerAuth()
 export class PreferencesController {
   constructor(private readonly prefs: PreferencesService) {}
 
@@ -17,6 +21,7 @@ export class PreferencesController {
   }
 
   @Put()
+  @ApiZodBody(partnerPreferencesSchema)
   set(
     @CurrentUser() u: JwtPayload,
     @Param('id', ParseUUIDPipe) id: string,

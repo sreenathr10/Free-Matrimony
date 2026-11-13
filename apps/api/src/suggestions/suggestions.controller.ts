@@ -1,4 +1,6 @@
 import { Body, Controller, Get, Param, ParseUUIDPipe, Post, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiZodBody } from '../common/openapi';
 import {
   reviewSuggestionSchema,
   updateProfileSchema,
@@ -11,8 +13,10 @@ import { JwtGuard } from '../auth/jwt.guard';
 import { ZodPipe } from '../common/zod.pipe';
 import { SuggestionsService } from './suggestions.service';
 
+@ApiTags('Edit suggestions')
 @Controller('profiles/:id/suggestions')
 @UseGuards(JwtGuard)
+@ApiBearerAuth()
 export class SuggestionsController {
   constructor(private readonly suggestions: SuggestionsService) {}
 
@@ -22,6 +26,7 @@ export class SuggestionsController {
   }
 
   @Post()
+  @ApiZodBody(updateProfileSchema)
   create(
     @CurrentUser() u: JwtPayload,
     @Param('id', ParseUUIDPipe) id: string,
@@ -31,6 +36,7 @@ export class SuggestionsController {
   }
 
   @Post(':suggestionId/review')
+  @ApiZodBody(reviewSuggestionSchema)
   review(
     @CurrentUser() u: JwtPayload,
     @Param('id', ParseUUIDPipe) id: string,

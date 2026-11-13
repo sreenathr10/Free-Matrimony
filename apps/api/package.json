@@ -9,7 +9,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "jest --runInBand",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "ts-node --transpile-only src/db/migrate.ts"
+    "db:migrate": "ts-node --transpile-only src/db/migrate.ts",
+    "openapi": "ts-node --transpile-only src/openapi-export.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1168.0",
@@ -20,12 +21,14 @@
     "@nestjs/core": "^11.0.12",
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/platform-express": "^11.0.12",
+    "@nestjs/swagger": "^11.4.8",
     "drizzle-orm": "^0.41.0",
     "pg": "^8.14.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
     "sharp": "^0.35.5",
-    "zod": "^3.24.2"
+    "zod": "^3.24.2",
+    "zod-to-json-schema": "^3.25.2"
   },
   "devDependencies": {
     "@nestjs/testing": "^11.0.12",

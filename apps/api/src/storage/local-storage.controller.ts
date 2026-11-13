@@ -1,9 +1,11 @@
 import { BadRequestException, Controller, ForbiddenException, Get, NotFoundException, Put, Query, Req, Res } from '@nestjs/common';
+import { ApiExcludeController } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 import { MAX_PHOTO_BYTES } from '@fm/shared';
 import { LocalStorageService, StorageService } from './storage.service';
 
 /** Serves signed upload/download URLs for LocalStorageService. Returns 404 when S3 is in use. */
+@ApiExcludeController()
 @Controller('local-storage')
 export class LocalStorageController {
   constructor(private readonly storage: StorageService) {}

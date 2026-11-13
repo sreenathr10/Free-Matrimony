@@ -68,6 +68,12 @@ The rules live in [`packages/shared/src/family.ts`](packages/shared/src/family.t
 
 ## API (v1)
 
+Every app (member web, iOS, Android) and every staff portal uses this one API; no app talks to the database
+directly. Interactive docs run at **`http://localhost:4000/docs`** (raw spec at `/docs/openapi.json`), generated
+from the code, so they are always current. `pnpm --filter @fm/api openapi` writes `apps/api/openapi.json`, which
+can be used to generate typed clients (for example `openapi-generator` for Dart).
+
+
 | Method | Path | Who |
 | --- | --- | --- |
 | POST | `/v1/auth/otp/request` | Anyone |

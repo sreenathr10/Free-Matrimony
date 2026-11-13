@@ -1,4 +1,6 @@
 import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiZodBody } from '../common/openapi';
 import { z } from 'zod';
 import { photoUploadRequestSchema, type PhotoUploadRequest } from '@fm/shared';
 import type { JwtPayload } from '../auth/auth.service';
@@ -9,8 +11,10 @@ import { PhotosService } from './photos.service';
 
 const reorderSchema = z.object({ photoIds: z.array(z.string().uuid()).min(1) });
 
+@ApiTags('Photos')
 @Controller('profiles/:id/photos')
 @UseGuards(JwtGuard)
+@ApiBearerAuth()
 export class PhotosController {
   constructor(private readonly photos: PhotosService) {}
 
@@ -21,6 +25,7 @@ export class PhotosController {
 
   /** Step 1: get a signed URL, then PUT the file there. */
   @Post('uploads')
+  @ApiZodBody(photoUploadRequestSchema)
   requestUpload(
     @CurrentUser() u: JwtPayload,
     @Param('id', ParseUUIDPipe) id: string,
@@ -41,6 +46,7 @@ export class PhotosController {
   }
 
   @Put('order')
+  @ApiZodBody(reorderSchema)
   reorder(
     @CurrentUser() u: JwtPayload,
     @Param('id', ParseUUIDPipe) id: string,

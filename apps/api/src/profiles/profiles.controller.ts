@@ -1,4 +1,6 @@
 import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiZodBody } from '../common/openapi';
 import { z } from 'zod';
 import {
   createProfileSchema,
@@ -19,8 +21,10 @@ import { ProfilesService } from './profiles.service';
 
 const visibilitySchema = z.object({ hidden: z.boolean() });
 
+@ApiTags('Profiles and family')
 @Controller('profiles')
 @UseGuards(JwtGuard)
+@ApiBearerAuth()
 export class ProfilesController {
   constructor(
     private readonly profiles: ProfilesService,
@@ -28,6 +32,7 @@ export class ProfilesController {
   ) {}
 
   @Post()
+  @ApiZodBody(createProfileSchema)
   create(@CurrentUser() user: JwtPayload, @Body(new ZodPipe(createProfileSchema)) body: CreateProfileInput) {
     return this.profiles.create(user.sub, body);
   }
@@ -43,6 +48,7 @@ export class ProfilesController {
   }
 
   @Patch(':id')
+  @ApiZodBody(updateProfileSchema)
   update(
     @CurrentUser() user: JwtPayload,
     @Param('id', ParseUUIDPipe) id: string,
@@ -62,6 +68,7 @@ export class ProfilesController {
   }
 
   @Post(':id/visibility')
+  @ApiZodBody(visibilitySchema)
   visibility(
     @CurrentUser() user: JwtPayload,
     @Param('id', ParseUUIDPipe) id: string,
@@ -76,6 +83,7 @@ export class ProfilesController {
   }
 
   @Post(':id/members')
+  @ApiZodBody(inviteMemberSchema)
   invite(
     @CurrentUser() user: JwtPayload,
     @Param('id', ParseUUIDPipe) id: string,
@@ -90,6 +98,7 @@ export class ProfilesController {
   }
 
   @Patch(':id/members/:memberId/permissions')
+  @ApiZodBody(updateMemberPermissionsSchema)
   updatePermissions(
     @CurrentUser() user: JwtPayload,
     @Param('id', ParseUUIDPipe) id: string,
