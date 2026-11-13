@@ -48,6 +48,10 @@ cd apps/mobile && flutter test
 The API tests need a Postgres database; set `TEST_DATABASE_URL` or use the default
 `postgres://fm:fm@localhost:5432/free_matrimony_test`. The tests reset that database.
 
+## Roadmap
+
+See [docs/ROADMAP.md](docs/ROADMAP.md) for the milestones from foundation to launch.
+
 ## Family accounts
 
 Every candidate profile belongs to a family. The candidate, parents, siblings and other relatives each have

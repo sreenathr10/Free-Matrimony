@@ -1,0 +1,99 @@
+# Development roadmap
+
+The build plan, milestone by milestone. Each milestone ships as one or more pull requests and is done when every
+box is ticked and its tests pass in CI. The product plan (positioning, pricing, launch strategy) lives in the
+project's plan doc; this file is the engineering view of it.
+
+The target is a public MVP launch at the end of **M8**, with every surface live: member app (iOS, Android, web),
+admin, customer service and verification portals. Estimates assume a small team plus Claude; they are rough.
+
+| # | Milestone | Outcome | Estimate | Status |
+| --- | --- | --- | --- | --- |
+| M1 | Foundation | Monorepo, API core, family accounts and access, app shells | 1 week | Done (PR #1) |
+| M2 | Profiles | Families can create a full profile with photos and preferences | 2 weeks | In progress |
+| M3 | Verification | Every profile is ID- and liveness-checked before going live | 3 weeks | Not started |
+| M4 | Discovery | Search, daily AI picks, shortlist, privacy rules | 3 weeks | Not started |
+| M5 | Connections | Interests with family approvals, chat, safety, notifications | 3 weeks | Not started |
+| M6 | Payments | Plans, Razorpay, Stripe, store billing, per-country pricing | 2 weeks | Not started |
+| M7 | Support and admin | Tickets, reports, moderation, dashboards, staff management | 3 weeks | Not started |
+| M8 | Launch readiness | Security, compliance, performance, store release, closed beta | 3 weeks | Not started |
+| M9 | Phase 2 | Calls, porutham, video intros, campaigns, live support chat | 6 to 8 weeks | Later |
+| M10 | Phase 3 | Relationship managers, video dates, expansion to the West | Ongoing | Later |
+
+---
+
+## M1 Foundation (done)
+
+- [x] pnpm + Turborepo monorepo, shared packages, Docker Compose, CI for Node and Flutter
+- [x] Phone OTP login with JWT, rate and attempt limits
+- [x] Families, candidate profiles with Kerala fields, 18+ check
+- [x] Family roles and permissions; candidate overrides; consent before verification; audit log
+- [x] Member website, admin/support/verification portal shells, Flutter app shell
+
+## M2 Profiles
+
+- [ ] Partner preferences: age, height, religion, community, star, marital status, countries, education
+- [ ] Edit suggestions: relatives with *suggest* access propose changes; candidate or parent approves
+- [ ] Photo upload to object storage with presigned URLs; up to 8 photos, one primary
+- [ ] Blurred copy of every photo, shown until an interest is accepted
+- [ ] Profile completeness score with next-step hints
+- [ ] Web: profile creation wizard, profile editor, family members and access screen
+- [ ] Mobile: profile creation wizard and profile view
+
+## M3 Verification
+
+- [ ] Staff accounts with roles (admin, support agent, verifier) and portal login
+- [ ] KYC provider adapter (HyperVerge or IDfy for India, Onfido or Veriff abroad), mock in development
+- [ ] Selfie liveness and face match against profile photos
+- [ ] Government ID check (Aadhaar, passport, Emirates ID)
+- [ ] AI pre-screen: AI-generated faces, stock photos, duplicate accounts
+- [ ] Verification portal: queue, review screen, approve or reject with reasons, audit trail
+- [ ] Verified badge; profile goes LIVE on approval; member notified
+
+## M4 Discovery
+
+- [ ] Search with saved filters (community, star, native district, current country, age, height, education)
+- [ ] Match scoring with embeddings (pgvector) and a "why you match" explanation
+- [ ] Daily picks, refreshed every 24 hours
+- [ ] Shortlist (shared with the family, with notes and votes) and "who viewed me"
+- [ ] Privacy: photo blur until accepted, hide from relatives, incognito, hide inactive (60 days)
+
+## M5 Connections
+
+- [ ] Interests: send, accept, decline, with family approval flows from the permission rules
+- [ ] Chat over WebSockets once both accept; photos and voice notes; "sent by Mother" labels
+- [ ] Masked contact details revealed only to accepted matches with the right plan
+- [ ] Scam-pattern nudges in chat; block and report
+- [ ] Notifications: push (FCM), email, WhatsApp Business
+
+## M6 Payments
+
+- [ ] Plans and entitlements (Free, Gold, Platinum), boosts
+- [ ] Razorpay (India, UPI), Stripe (international), App Store and Play billing
+- [ ] Prices in local currency per country; coupons
+- [ ] Admin: plan and pricing management, refunds
+
+## M7 Support and admin
+
+- [ ] Support portal: tickets, member 360 view, report and dispute handling, saved replies
+- [ ] Admin portal: dashboards (sign-ups, verification, conversion, revenue), moderation, staff and roles
+- [ ] Campaigns: push, email, WhatsApp
+
+## M8 Launch readiness
+
+- [ ] Security review, rate limits everywhere, secrets management, pen test
+- [ ] DPDP and GDPR: consent records, data export, account deletion, grievance officer flow
+- [ ] Observability: Sentry, PostHog, uptime checks; load test
+- [ ] AWS infrastructure in Terraform (Mumbai primary), staging and production
+- [ ] App Store and Play Store submissions
+- [ ] Closed beta with 500 verified members in Kerala and the UAE; launch gate: no critical bugs
+
+## M9 Phase 2 (after launch)
+
+In-app voice and video calls (LiveKit or Agora), porutham matching, video and voice intros, education and job
+verification, campaigns and coupons, live support chat.
+
+## M10 Phase 3
+
+Relationship manager service, video dates across time zones, family group chat, success stories, A/B testing,
+expansion to the wider Gulf, UK, US and Canada.
