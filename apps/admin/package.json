@@ -11,6 +11,8 @@
   "dependencies": {
     "@fm/shared": "workspace:*",
     "@fm/ui": "workspace:*",
+    "lucide-react": "^0.511.0",
+    "motion": "^12.43.0",
     "next": "^15.3.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
