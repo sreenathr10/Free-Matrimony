@@ -28,10 +28,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final api = ref.read(apiProvider);
     try {
       if (!_codeSent) {
-        final res = await api.request('POST', '/auth/otp/request', {'phone': _phone.text.trim()});
+        final res = await api.request('POST', '/auth/otp/request', {
+          'phone': _phone.text.trim(),
+        });
         setState(() {
           _codeSent = true;
-          _devHint = res['devCode'] == null ? null : 'Development code: ${res['devCode']}';
+          _devHint = res['devCode'] == null
+              ? null
+              : 'Development code: ${res['devCode']}';
         });
       } else {
         final res = await api.request('POST', '/auth/otp/verify', {
@@ -60,9 +64,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         child: ListView(
           padding: const EdgeInsets.all(24),
           children: [
-            Text(_codeSent ? 'Enter your code' : 'Log in or sign up', style: t.headlineMedium),
+            Text(
+              _codeSent ? 'Enter your code' : 'Log in or sign up',
+              style: t.headlineMedium,
+            ),
             const SizedBox(height: 6),
-            Text(_codeSent ? 'Sent to ${_phone.text}' : 'We’ll send a 6-digit code to your phone.'),
+            Text(
+              _codeSent
+                  ? 'Sent to ${_phone.text}'
+                  : 'We’ll send a 6-digit code to your phone.',
+            ),
             const SizedBox(height: 24),
             if (!_codeSent)
               TextField(
@@ -77,16 +88,31 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 keyboardType: TextInputType.number,
                 maxLength: 6,
                 autofillHints: const [AutofillHints.oneTimeCode],
-                decoration: const InputDecoration(labelText: '6-digit code', counterText: ''),
+                decoration: const InputDecoration(
+                  labelText: '6-digit code',
+                  counterText: '',
+                ),
               ),
               const SizedBox(height: 12),
-              TextField(controller: _name, decoration: const InputDecoration(labelText: 'Your name (new accounts)')),
+              TextField(
+                controller: _name,
+                decoration: const InputDecoration(
+                  labelText: 'Your name (new accounts)',
+                ),
+              ),
             ],
-            if (_devHint != null) Padding(padding: const EdgeInsets.only(top: 12), child: Text(_devHint!)),
+            if (_devHint != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Text(_devHint!),
+              ),
             if (_error != null)
               Padding(
                 padding: const EdgeInsets.only(top: 12),
-                child: Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                child: Text(
+                  _error!,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
               ),
             const SizedBox(height: 24),
             FilledButton(

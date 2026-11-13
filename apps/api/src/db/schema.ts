@@ -24,6 +24,7 @@ import {
   STAFF_ROLES,
   STARS,
   type PermissionOverrides,
+  type UpdateProfileInput,
 } from '@fm/shared';
 
 export const staffRole = pgEnum('staff_role', STAFF_ROLES);
@@ -37,6 +38,8 @@ export const maritalStatus = pgEnum('marital_status', MARITAL_STATUSES);
 export const profileStatus = pgEnum('profile_status', PROFILE_STATUSES);
 export const accessLevel = pgEnum('access_level', ACCESS_LEVELS);
 export const memberStatus = pgEnum('member_status', ['INVITED', 'ACTIVE', 'REMOVED']);
+export const suggestionStatus = pgEnum('suggestion_status', ['PENDING', 'APPROVED', 'REJECTED']);
+export const photoStatus = pgEnum('photo_status', ['UPLOADING', 'READY', 'REJECTED', 'DELETED']);
 
 const timestamps = {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
@@ -144,6 +147,75 @@ export const profileMembers = pgTable(
   ],
 );
 
+/** What the candidate is looking for. One row per profile. */
+export const partnerPreferences = pgTable('partner_preferences', {
+  profileId: uuid('profile_id')
+    .primaryKey()
+    .references(() => profiles.id),
+  ageMin: integer('age_min').notNull(),
+  ageMax: integer('age_max').notNull(),
+  heightMinCm: integer('height_min_cm'),
+  heightMaxCm: integer('height_max_cm'),
+  religions: religion('religions').array().notNull().default([]),
+  communities: text('communities').array().notNull().default([]),
+  stars: star('stars').array().notNull().default([]),
+  maritalStatuses: maritalStatus('marital_statuses').array().notNull().default([]),
+  nativeDistricts: keralaDistrict('native_districts').array().notNull().default([]),
+  countries: varchar('countries', { length: 2 }).array().notNull().default([]),
+  educationNotes: varchar('education_notes', { length: 300 }),
+  requirePorutham: boolean('require_porutham').notNull().default(false),
+  updatedById: uuid('updated_by_id').references(() => users.id),
+  ...timestamps,
+});
+
+/** A change proposed by a relative with SUGGEST access, waiting for someone who can edit. */
+export const editSuggestions = pgTable(
+  'edit_suggestions',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    profileId: uuid('profile_id')
+      .notNull()
+      .references(() => profiles.id),
+    suggestedById: uuid('suggested_by_id')
+      .notNull()
+      .references(() => users.id),
+    changes: jsonb('changes').$type<UpdateProfileInput>().notNull(),
+    status: suggestionStatus('status').notNull().default('PENDING'),
+    reviewedById: uuid('reviewed_by_id').references(() => users.id),
+    reviewedAt: timestamp('reviewed_at', { withTimezone: true }),
+    note: varchar('note', { length: 300 }),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index('suggestions_profile_idx').on(t.profileId, t.status)],
+);
+
+/**
+ * Profile photos. The original upload is re-encoded (which strips EXIF/GPS data) into a display copy and
+ * a heavily blurred copy; the blurred copy is what non-accepted matches see.
+ */
+export const profilePhotos = pgTable(
+  'profile_photos',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    profileId: uuid('profile_id')
+      .notNull()
+      .references(() => profiles.id),
+    uploadedById: uuid('uploaded_by_id')
+      .notNull()
+      .references(() => users.id),
+    status: photoStatus('status').notNull().default('UPLOADING'),
+    uploadKey: text('upload_key').notNull(),
+    displayKey: text('display_key'),
+    blurredKey: text('blurred_key'),
+    width: integer('width'),
+    height: integer('height'),
+    isPrimary: boolean('is_primary').notNull().default(false),
+    position: integer('position').notNull().default(0),
+    ...timestamps,
+  },
+  (t) => [index('photos_profile_idx').on(t.profileId, t.status)],
+);
+
 /** Every sensitive action, with who did it. */
 export const auditLog = pgTable(
   'audit_log',
@@ -161,3 +233,4 @@ export const auditLog = pgTable(
 export type User = typeof users.$inferSelect;
 export type Profile = typeof profiles.$inferSelect;
 export type ProfileMember = typeof profileMembers.$inferSelect;
+export type ProfilePhoto = typeof profilePhotos.$inferSelect;

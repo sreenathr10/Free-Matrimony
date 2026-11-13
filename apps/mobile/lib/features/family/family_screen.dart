@@ -6,8 +6,11 @@ import '../../core/api.dart';
 import '../../core/theme.dart';
 import 'models.dart';
 
-final myProfilesProvider = FutureProvider.autoDispose<List<MyProfile>>((ref) async {
-  final res = await ref.watch(apiProvider).request('GET', '/profiles/mine') as List;
+final myProfilesProvider = FutureProvider.autoDispose<List<MyProfile>>((
+  ref,
+) async {
+  final res =
+      await ref.watch(apiProvider).request('GET', '/profiles/mine') as List;
   return res.map((e) => MyProfile.fromJson(e as Map<String, dynamic>)).toList();
 });
 
@@ -31,15 +34,27 @@ class FamilyScreen extends ConsumerWidget {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => context.go('/profiles/new'),
+        icon: const Icon(Icons.person_add_alt_1_rounded),
+        label: const Text('Create profile'),
+      ),
       body: RefreshIndicator(
         onRefresh: () => ref.refresh(myProfilesProvider.future),
         child: profiles.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => ListView(padding: const EdgeInsets.all(24), children: [Text('$e')]),
+          error: (e, _) => ListView(
+            padding: const EdgeInsets.all(24),
+            children: [Text('$e')],
+          ),
           data: (items) => items.isEmpty
               ? ListView(
                   padding: const EdgeInsets.all(24),
-                  children: const [Text('No profiles yet. Profile creation is coming in the next milestone.')],
+                  children: const [
+                    Text(
+                      'No profiles yet. Create one for yourself or for a son, daughter or sibling.',
+                    ),
+                  ],
                 )
               : ListView.separated(
                   padding: const EdgeInsets.all(16),
@@ -61,33 +76,59 @@ class _ProfileCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final t = Theme.of(context).textTheme;
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(profile.fullName, style: t.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
-            const SizedBox(height: 2),
-            Text('${profile.relationLabel} · ${profile.location}', style: t.bodyMedium),
-            const SizedBox(height: 10),
-            Wrap(spacing: 8, children: [
-              Chip(
-                label: Text(profile.statusLabel),
-                avatar: profile.status == 'LIVE' ? const Icon(Icons.verified_rounded, color: Brand.verified, size: 18) : null,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: profile.invitationPending
+            ? null
+            : () => context.go('/profiles/${profile.id}'),
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                profile.fullName,
+                style: t.titleLarge?.copyWith(fontWeight: FontWeight.w600),
               ),
-              Chip(label: Text(profile.role.toLowerCase())),
-            ]),
-            if (profile.invitationPending) ...[
-              const SizedBox(height: 12),
-              FilledButton(
-                onPressed: () async {
-                  await ref.read(apiProvider).request('POST', '/profiles/${profile.id}/members/accept');
-                  ref.invalidate(myProfilesProvider);
-                },
-                child: const Text('Accept invite'),
+              const SizedBox(height: 2),
+              Text(
+                '${profile.relationLabel} · ${profile.location}',
+                style: t.bodyMedium,
               ),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 8,
+                children: [
+                  Chip(
+                    label: Text(profile.statusLabel),
+                    avatar: profile.status == 'LIVE'
+                        ? const Icon(
+                            Icons.verified_rounded,
+                            color: Brand.verified,
+                            size: 18,
+                          )
+                        : null,
+                  ),
+                  Chip(label: Text(profile.role.toLowerCase())),
+                ],
+              ),
+              if (profile.invitationPending) ...[
+                const SizedBox(height: 12),
+                FilledButton(
+                  onPressed: () async {
+                    await ref
+                        .read(apiProvider)
+                        .request(
+                          'POST',
+                          '/profiles/${profile.id}/members/accept',
+                        );
+                    ref.invalidate(myProfilesProvider);
+                  },
+                  child: const Text('Accept invite'),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

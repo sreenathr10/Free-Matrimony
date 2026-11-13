@@ -40,7 +40,9 @@ class MyProfile {
 
   bool can(String permission) => permissions[permission] == 'ALLOW';
 
-  String get relationLabel => relation == 'SELF' ? 'Your profile' : 'You are their ${relation.toLowerCase()}';
+  String get relationLabel => relation == 'SELF'
+      ? 'Your profile'
+      : 'You are their ${relation.toLowerCase()}';
   String get statusLabel => status.replaceAll('_', ' ').toLowerCase();
   String get location => city == null ? country : '$city, $country';
 }

@@ -1,0 +1,1721 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/v1/health": {
+      "get": {
+        "operationId": "HealthController_check",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/v1/auth/otp/request": {
+      "post": {
+        "operationId": "AuthController_request",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "phone": {
+                    "type": "string",
+                    "pattern": "^\\+[1-9]\\d{7,14}$"
+                  }
+                },
+                "required": [
+                  "phone"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/v1/auth/otp/verify": {
+      "post": {
+        "operationId": "AuthController_verify",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "phone": {
+                    "type": "string",
+                    "pattern": "^\\+[1-9]\\d{7,14}$"
+                  },
+                  "code": {
+                    "type": "string",
+                    "pattern": "^\\d{6}$"
+                  },
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  }
+                },
+                "required": [
+                  "phone",
+                  "code"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/v1/auth/me": {
+      "get": {
+        "operationId": "AuthController_me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/v1/profiles": {
+      "post": {
+        "operationId": "ProfilesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "fullName": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 100
+                  },
+                  "gender": {
+                    "type": "string",
+                    "enum": [
+                      "MALE",
+                      "FEMALE"
+                    ]
+                  },
+                  "dateOfBirth": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "maritalStatus": {
+                    "type": "string",
+                    "enum": [
+                      "NEVER_MARRIED",
+                      "DIVORCED",
+                      "WIDOWED",
+                      "AWAITING_DIVORCE"
+                    ],
+                    "default": "NEVER_MARRIED"
+                  },
+                  "religion": {
+                    "type": "string",
+                    "enum": [
+                      "HINDU",
+                      "CHRISTIAN",
+                      "MUSLIM",
+                      "JAIN",
+                      "SIKH",
+                      "BUDDHIST",
+                      "OTHER",
+                      "NONE"
+                    ]
+                  },
+                  "community": {
+                    "type": "string",
+                    "maxLength": 80
+                  },
+                  "star": {
+                    "type": "string",
+                    "enum": [
+                      "ASWATHY",
+                      "BHARANI",
+                      "KARTHIKA",
+                      "ROHINI",
+                      "MAKAYIRAM",
+                      "THIRUVATHIRA",
+                      "PUNARTHAM",
+                      "POOYAM",
+                      "AYILYAM",
+                      "MAKAM",
+                      "POORAM",
+                      "UTHRAM",
+                      "ATHAM",
+                      "CHITHIRA",
+                      "CHOTHI",
+                      "VISAKHAM",
+                      "ANIZHAM",
+                      "THRIKKETTA",
+                      "MOOLAM",
+                      "POORADAM",
+                      "UTHRADAM",
+                      "THIRUVONAM",
+                      "AVITTAM",
+                      "CHATHAYAM",
+                      "POORURUTTATHI",
+                      "UTHRATTATHI",
+                      "REVATHI"
+                    ]
+                  },
+                  "nativeDistrict": {
+                    "type": "string",
+                    "enum": [
+                      "THIRUVANANTHAPURAM",
+                      "KOLLAM",
+                      "PATHANAMTHITTA",
+                      "ALAPPUZHA",
+                      "KOTTAYAM",
+                      "IDUKKI",
+                      "ERNAKULAM",
+                      "THRISSUR",
+                      "PALAKKAD",
+                      "MALAPPURAM",
+                      "KOZHIKODE",
+                      "WAYANAD",
+                      "KANNUR",
+                      "KASARAGOD"
+                    ]
+                  },
+                  "currentCountry": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 2,
+                    "description": "ISO 3166-1 alpha-2"
+                  },
+                  "currentCity": {
+                    "type": "string",
+                    "maxLength": 80
+                  },
+                  "heightCm": {
+                    "type": "integer",
+                    "minimum": 120,
+                    "maximum": 230
+                  },
+                  "education": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "occupation": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "about": {
+                    "type": "string",
+                    "maxLength": 2000
+                  },
+                  "createdAs": {
+                    "type": "string",
+                    "enum": [
+                      "SELF",
+                      "MOTHER",
+                      "FATHER",
+                      "BROTHER",
+                      "SISTER",
+                      "GUARDIAN"
+                    ]
+                  }
+                },
+                "required": [
+                  "fullName",
+                  "gender",
+                  "dateOfBirth",
+                  "religion",
+                  "currentCountry",
+                  "createdAs"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Profiles and family"
+        ]
+      }
+    },
+    "/v1/profiles/mine": {
+      "get": {
+        "operationId": "ProfilesController_mine",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Profiles and family"
+        ]
+      }
+    },
+    "/v1/profiles/{id}": {
+      "get": {
+        "operationId": "ProfilesController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Profiles and family"
+        ]
+      },
+      "patch": {
+        "operationId": "ProfilesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "fullName": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 100
+                  },
+                  "gender": {
+                    "type": "string",
+                    "enum": [
+                      "MALE",
+                      "FEMALE"
+                    ]
+                  },
+                  "dateOfBirth": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "maritalStatus": {
+                    "type": "string",
+                    "enum": [
+                      "NEVER_MARRIED",
+                      "DIVORCED",
+                      "WIDOWED",
+                      "AWAITING_DIVORCE"
+                    ],
+                    "default": "NEVER_MARRIED"
+                  },
+                  "religion": {
+                    "type": "string",
+                    "enum": [
+                      "HINDU",
+                      "CHRISTIAN",
+                      "MUSLIM",
+                      "JAIN",
+                      "SIKH",
+                      "BUDDHIST",
+                      "OTHER",
+                      "NONE"
+                    ]
+                  },
+                  "community": {
+                    "type": "string",
+                    "maxLength": 80
+                  },
+                  "star": {
+                    "type": "string",
+                    "enum": [
+                      "ASWATHY",
+                      "BHARANI",
+                      "KARTHIKA",
+                      "ROHINI",
+                      "MAKAYIRAM",
+                      "THIRUVATHIRA",
+                      "PUNARTHAM",
+                      "POOYAM",
+                      "AYILYAM",
+                      "MAKAM",
+                      "POORAM",
+                      "UTHRAM",
+                      "ATHAM",
+                      "CHITHIRA",
+                      "CHOTHI",
+                      "VISAKHAM",
+                      "ANIZHAM",
+                      "THRIKKETTA",
+                      "MOOLAM",
+                      "POORADAM",
+                      "UTHRADAM",
+                      "THIRUVONAM",
+                      "AVITTAM",
+                      "CHATHAYAM",
+                      "POORURUTTATHI",
+                      "UTHRATTATHI",
+                      "REVATHI"
+                    ]
+                  },
+                  "nativeDistrict": {
+                    "type": "string",
+                    "enum": [
+                      "THIRUVANANTHAPURAM",
+                      "KOLLAM",
+                      "PATHANAMTHITTA",
+                      "ALAPPUZHA",
+                      "KOTTAYAM",
+                      "IDUKKI",
+                      "ERNAKULAM",
+                      "THRISSUR",
+                      "PALAKKAD",
+                      "MALAPPURAM",
+                      "KOZHIKODE",
+                      "WAYANAD",
+                      "KANNUR",
+                      "KASARAGOD"
+                    ]
+                  },
+                  "currentCountry": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 2,
+                    "description": "ISO 3166-1 alpha-2"
+                  },
+                  "currentCity": {
+                    "type": "string",
+                    "maxLength": 80
+                  },
+                  "heightCm": {
+                    "type": "integer",
+                    "minimum": 120,
+                    "maximum": 230
+                  },
+                  "education": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "occupation": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "about": {
+                    "type": "string",
+                    "maxLength": 2000
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Profiles and family"
+        ]
+      }
+    },
+    "/v1/profiles/{id}/consent": {
+      "post": {
+        "operationId": "ProfilesController_consent",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Profiles and family"
+        ]
+      }
+    },
+    "/v1/profiles/{id}/submit": {
+      "post": {
+        "operationId": "ProfilesController_submit",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Profiles and family"
+        ]
+      }
+    },
+    "/v1/profiles/{id}/visibility": {
+      "post": {
+        "operationId": "ProfilesController_visibility",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "hidden": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "hidden"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Profiles and family"
+        ]
+      }
+    },
+    "/v1/profiles/{id}/members": {
+      "get": {
+        "operationId": "ProfilesController_listMembers",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Profiles and family"
+        ]
+      },
+      "post": {
+        "operationId": "ProfilesController_invite",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "phone": {
+                    "type": "string",
+                    "pattern": "^\\+[1-9]\\d{7,14}$"
+                  },
+                  "relation": {
+                    "type": "string",
+                    "enum": [
+                      "SELF",
+                      "MOTHER",
+                      "FATHER",
+                      "BROTHER",
+                      "SISTER",
+                      "GUARDIAN",
+                      "UNCLE",
+                      "AUNT",
+                      "COUSIN",
+                      "GRANDPARENT",
+                      "OTHER"
+                    ]
+                  },
+                  "overrides": {
+                    "type": "object",
+                    "properties": {
+                      "BROWSE_MATCHES": {
+                        "type": "string",
+                        "enum": [
+                          "DENY",
+                          "SUGGEST",
+                          "APPROVAL",
+                          "ALLOW"
+                        ]
+                      },
+                      "SHORTLIST": {
+                        "type": "string",
+                        "enum": [
+                          "DENY",
+                          "SUGGEST",
+                          "APPROVAL",
+                          "ALLOW"
+                        ]
+                      },
+                      "SEND_INTEREST": {
+                        "type": "string",
+                        "enum": [
+                          "DENY",
+                          "SUGGEST",
+                          "APPROVAL",
+                          "ALLOW"
+                        ]
+                      },
+                      "RESPOND_INTEREST": {
+                        "type": "string",
+                        "enum": [
+                          "DENY",
+                          "SUGGEST",
+                          "APPROVAL",
+                          "ALLOW"
+                        ]
+                      },
+                      "CHAT": {
+                        "type": "string",
+                        "enum": [
+                          "DENY",
+                          "SUGGEST",
+                          "APPROVAL",
+                          "ALLOW"
+                        ]
+                      },
+                      "VIEW_CONTACTS": {
+                        "type": "string",
+                        "enum": [
+                          "DENY",
+                          "SUGGEST",
+                          "APPROVAL",
+                          "ALLOW"
+                        ]
+                      },
+                      "EDIT_PROFILE": {
+                        "type": "string",
+                        "enum": [
+                          "DENY",
+                          "SUGGEST",
+                          "APPROVAL",
+                          "ALLOW"
+                        ]
+                      },
+                      "MANAGE_SUBSCRIPTION": {
+                        "type": "string",
+                        "enum": [
+                          "DENY",
+                          "SUGGEST",
+                          "APPROVAL",
+                          "ALLOW"
+                        ]
+                      },
+                      "MANAGE_FAMILY": {
+                        "type": "string",
+                        "enum": [
+                          "DENY",
+                          "SUGGEST",
+                          "APPROVAL",
+                          "ALLOW"
+                        ]
+                      },
+                      "MANAGE_PRIVACY": {
+                        "type": "string",
+                        "enum": [
+                          "DENY",
+                          "SUGGEST",
+                          "APPROVAL",
+                          "ALLOW"
+                        ]
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "phone",
+                  "relation"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Profiles and family"
+        ]
+      }
+    },
+    "/v1/profiles/{id}/members/accept": {
+      "post": {
+        "operationId": "ProfilesController_accept",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Profiles and family"
+        ]
+      }
+    },
+    "/v1/profiles/{id}/members/{memberId}/permissions": {
+      "patch": {
+        "operationId": "ProfilesController_updatePermissions",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "memberId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "overrides": {
+                    "type": "object",
+                    "properties": {
+                      "BROWSE_MATCHES": {
+                        "type": "string",
+                        "enum": [
+                          "DENY",
+                          "SUGGEST",
+                          "APPROVAL",
+                          "ALLOW"
+                        ]
+                      },
+                      "SHORTLIST": {
+                        "type": "string",
+                        "enum": [
+                          "DENY",
+                          "SUGGEST",
+                          "APPROVAL",
+                          "ALLOW"
+                        ]
+                      },
+                      "SEND_INTEREST": {
+                        "type": "string",
+                        "enum": [
+                          "DENY",
+                          "SUGGEST",
+                          "APPROVAL",
+                          "ALLOW"
+                        ]
+                      },
+                      "RESPOND_INTEREST": {
+                        "type": "string",
+                        "enum": [
+                          "DENY",
+                          "SUGGEST",
+                          "APPROVAL",
+                          "ALLOW"
+                        ]
+                      },
+                      "CHAT": {
+                        "type": "string",
+                        "enum": [
+                          "DENY",
+                          "SUGGEST",
+                          "APPROVAL",
+                          "ALLOW"
+                        ]
+                      },
+                      "VIEW_CONTACTS": {
+                        "type": "string",
+                        "enum": [
+                          "DENY",
+                          "SUGGEST",
+                          "APPROVAL",
+                          "ALLOW"
+                        ]
+                      },
+                      "EDIT_PROFILE": {
+                        "type": "string",
+                        "enum": [
+                          "DENY",
+                          "SUGGEST",
+                          "APPROVAL",
+                          "ALLOW"
+                        ]
+                      },
+                      "MANAGE_SUBSCRIPTION": {
+                        "type": "string",
+                        "enum": [
+                          "DENY",
+                          "SUGGEST",
+                          "APPROVAL",
+                          "ALLOW"
+                        ]
+                      },
+                      "MANAGE_FAMILY": {
+                        "type": "string",
+                        "enum": [
+                          "DENY",
+                          "SUGGEST",
+                          "APPROVAL",
+                          "ALLOW"
+                        ]
+                      },
+                      "MANAGE_PRIVACY": {
+                        "type": "string",
+                        "enum": [
+                          "DENY",
+                          "SUGGEST",
+                          "APPROVAL",
+                          "ALLOW"
+                        ]
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "overrides"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Profiles and family"
+        ]
+      }
+    },
+    "/v1/profiles/{id}/members/{memberId}": {
+      "delete": {
+        "operationId": "ProfilesController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "memberId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Profiles and family"
+        ]
+      }
+    },
+    "/v1/profiles/{id}/photos": {
+      "get": {
+        "operationId": "PhotosController_list",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Photos"
+        ]
+      }
+    },
+    "/v1/profiles/{id}/photos/uploads": {
+      "post": {
+        "operationId": "PhotosController_requestUpload",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "contentType": {
+                    "type": "string",
+                    "enum": [
+                      "image/jpeg",
+                      "image/png",
+                      "image/webp"
+                    ]
+                  },
+                  "sizeBytes": {
+                    "type": "integer",
+                    "exclusiveMinimum": true,
+                    "minimum": 0,
+                    "maximum": 10485760
+                  }
+                },
+                "required": [
+                  "contentType",
+                  "sizeBytes"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Photos"
+        ]
+      }
+    },
+    "/v1/profiles/{id}/photos/{photoId}/confirm": {
+      "post": {
+        "operationId": "PhotosController_confirm",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "photoId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Photos"
+        ]
+      }
+    },
+    "/v1/profiles/{id}/photos/{photoId}/primary": {
+      "post": {
+        "operationId": "PhotosController_primary",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "photoId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Photos"
+        ]
+      }
+    },
+    "/v1/profiles/{id}/photos/order": {
+      "put": {
+        "operationId": "PhotosController_reorder",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "photoIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "minItems": 1
+                  }
+                },
+                "required": [
+                  "photoIds"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Photos"
+        ]
+      }
+    },
+    "/v1/profiles/{id}/photos/{photoId}": {
+      "delete": {
+        "operationId": "PhotosController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "photoId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Photos"
+        ]
+      }
+    },
+    "/v1/profiles/{id}/preferences": {
+      "get": {
+        "operationId": "PreferencesController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Partner preferences"
+        ]
+      },
+      "put": {
+        "operationId": "PreferencesController_set",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ageMin": {
+                    "type": "integer",
+                    "minimum": 18,
+                    "maximum": 80,
+                    "default": 21
+                  },
+                  "ageMax": {
+                    "type": "integer",
+                    "minimum": 18,
+                    "maximum": 80,
+                    "default": 40
+                  },
+                  "heightMinCm": {
+                    "type": "integer",
+                    "minimum": 120,
+                    "maximum": 230
+                  },
+                  "heightMaxCm": {
+                    "type": "integer",
+                    "minimum": 120,
+                    "maximum": 230
+                  },
+                  "religions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "HINDU",
+                        "CHRISTIAN",
+                        "MUSLIM",
+                        "JAIN",
+                        "SIKH",
+                        "BUDDHIST",
+                        "OTHER",
+                        "NONE"
+                      ]
+                    },
+                    "maxItems": 8,
+                    "default": []
+                  },
+                  "communities": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "maxItems": 20,
+                    "default": []
+                  },
+                  "stars": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "ASWATHY",
+                        "BHARANI",
+                        "KARTHIKA",
+                        "ROHINI",
+                        "MAKAYIRAM",
+                        "THIRUVATHIRA",
+                        "PUNARTHAM",
+                        "POOYAM",
+                        "AYILYAM",
+                        "MAKAM",
+                        "POORAM",
+                        "UTHRAM",
+                        "ATHAM",
+                        "CHITHIRA",
+                        "CHOTHI",
+                        "VISAKHAM",
+                        "ANIZHAM",
+                        "THRIKKETTA",
+                        "MOOLAM",
+                        "POORADAM",
+                        "UTHRADAM",
+                        "THIRUVONAM",
+                        "AVITTAM",
+                        "CHATHAYAM",
+                        "POORURUTTATHI",
+                        "UTHRATTATHI",
+                        "REVATHI"
+                      ]
+                    },
+                    "maxItems": 27,
+                    "default": []
+                  },
+                  "maritalStatuses": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "NEVER_MARRIED",
+                        "DIVORCED",
+                        "WIDOWED",
+                        "AWAITING_DIVORCE"
+                      ]
+                    },
+                    "default": []
+                  },
+                  "nativeDistricts": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "THIRUVANANTHAPURAM",
+                        "KOLLAM",
+                        "PATHANAMTHITTA",
+                        "ALAPPUZHA",
+                        "KOTTAYAM",
+                        "IDUKKI",
+                        "ERNAKULAM",
+                        "THRISSUR",
+                        "PALAKKAD",
+                        "MALAPPURAM",
+                        "KOZHIKODE",
+                        "WAYANAD",
+                        "KANNUR",
+                        "KASARAGOD"
+                      ]
+                    },
+                    "default": []
+                  },
+                  "countries": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 2,
+                      "maxLength": 2
+                    },
+                    "maxItems": 50,
+                    "default": []
+                  },
+                  "educationNotes": {
+                    "type": "string",
+                    "maxLength": 300
+                  },
+                  "requirePorutham": {
+                    "type": "boolean",
+                    "default": false
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Partner preferences"
+        ]
+      }
+    },
+    "/v1/profiles/{id}/suggestions": {
+      "get": {
+        "operationId": "SuggestionsController_list",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Edit suggestions"
+        ]
+      },
+      "post": {
+        "operationId": "SuggestionsController_create",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "fullName": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 100
+                  },
+                  "gender": {
+                    "type": "string",
+                    "enum": [
+                      "MALE",
+                      "FEMALE"
+                    ]
+                  },
+                  "dateOfBirth": {
+                    "type": "string",
+                    "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                  },
+                  "maritalStatus": {
+                    "type": "string",
+                    "enum": [
+                      "NEVER_MARRIED",
+                      "DIVORCED",
+                      "WIDOWED",
+                      "AWAITING_DIVORCE"
+                    ],
+                    "default": "NEVER_MARRIED"
+                  },
+                  "religion": {
+                    "type": "string",
+                    "enum": [
+                      "HINDU",
+                      "CHRISTIAN",
+                      "MUSLIM",
+                      "JAIN",
+                      "SIKH",
+                      "BUDDHIST",
+                      "OTHER",
+                      "NONE"
+                    ]
+                  },
+                  "community": {
+                    "type": "string",
+                    "maxLength": 80
+                  },
+                  "star": {
+                    "type": "string",
+                    "enum": [
+                      "ASWATHY",
+                      "BHARANI",
+                      "KARTHIKA",
+                      "ROHINI",
+                      "MAKAYIRAM",
+                      "THIRUVATHIRA",
+                      "PUNARTHAM",
+                      "POOYAM",
+                      "AYILYAM",
+                      "MAKAM",
+                      "POORAM",
+                      "UTHRAM",
+                      "ATHAM",
+                      "CHITHIRA",
+                      "CHOTHI",
+                      "VISAKHAM",
+                      "ANIZHAM",
+                      "THRIKKETTA",
+                      "MOOLAM",
+                      "POORADAM",
+                      "UTHRADAM",
+                      "THIRUVONAM",
+                      "AVITTAM",
+                      "CHATHAYAM",
+                      "POORURUTTATHI",
+                      "UTHRATTATHI",
+                      "REVATHI"
+                    ]
+                  },
+                  "nativeDistrict": {
+                    "type": "string",
+                    "enum": [
+                      "THIRUVANANTHAPURAM",
+                      "KOLLAM",
+                      "PATHANAMTHITTA",
+                      "ALAPPUZHA",
+                      "KOTTAYAM",
+                      "IDUKKI",
+                      "ERNAKULAM",
+                      "THRISSUR",
+                      "PALAKKAD",
+                      "MALAPPURAM",
+                      "KOZHIKODE",
+                      "WAYANAD",
+                      "KANNUR",
+                      "KASARAGOD"
+                    ]
+                  },
+                  "currentCountry": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 2,
+                    "description": "ISO 3166-1 alpha-2"
+                  },
+                  "currentCity": {
+                    "type": "string",
+                    "maxLength": 80
+                  },
+                  "heightCm": {
+                    "type": "integer",
+                    "minimum": 120,
+                    "maximum": 230
+                  },
+                  "education": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "occupation": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "about": {
+                    "type": "string",
+                    "maxLength": 2000
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Edit suggestions"
+        ]
+      }
+    },
+    "/v1/profiles/{id}/suggestions/{suggestionId}/review": {
+      "post": {
+        "operationId": "SuggestionsController_review",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "suggestionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "APPROVE",
+                      "REJECT"
+                    ]
+                  },
+                  "note": {
+                    "type": "string",
+                    "maxLength": 300
+                  }
+                },
+                "required": [
+                  "decision"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Edit suggestions"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Free Matrimony API",
+    "description": "One API for the member apps (web, iOS, Android) and the staff portals (admin, customer service, verification).\n\nLog in with `POST /v1/auth/otp/request` then `POST /v1/auth/otp/verify`, and send the returned token as `Authorization: Bearer <token>`. In development the OTP code is included in the response.",
+    "version": "1",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {}
+  }
+}

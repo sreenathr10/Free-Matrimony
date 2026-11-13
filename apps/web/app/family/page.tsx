@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { AccessLevel, Permission } from '@fm/shared';
-import { Badge, Button, Card } from '@fm/ui';
+import { Badge, Button, Card, buttonClass } from '@fm/ui';
 import { api, session } from '@/lib/api';
 
 interface MyProfile {
@@ -42,19 +42,30 @@ export default function FamilyPage() {
           Log out
         </Button>
       </div>
-      <p className="mt-1 text-ink-muted">Profiles you manage or have been invited to.</p>
+      <div className="mt-1 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-ink-muted">Profiles you manage or have been invited to.</p>
+        <a href="/profiles/new" className={buttonClass('primary', 'sm')}>
+          Create a profile
+        </a>
+      </div>
 
       <div className="mt-8 flex flex-col gap-4">
         {items === null && <Card className="animate-pulse text-ink-muted">Loading…</Card>}
         {items?.length === 0 && (
           <Card>
-            <p>No profiles yet. Profile creation is coming in the next milestone.</p>
+            <p>No profiles yet. Create one for yourself or for a son, daughter or sibling.</p>
           </Card>
         )}
         {items?.map(({ profile, access, invitationPending }) => (
           <Card key={profile.id} className="flex items-center justify-between gap-4">
             <div>
-              <div className="text-lg font-semibold">{profile.fullName}</div>
+              {invitationPending ? (
+                <div className="text-lg font-semibold">{profile.fullName}</div>
+              ) : (
+                <a href={`/profiles/${profile.id}`} className="text-lg font-semibold hover:text-brand-600">
+                  {profile.fullName}
+                </a>
+              )}
               <div className="text-sm text-ink-muted">
                 {relationLabel(access.relation)} · {profile.currentCity ? `${profile.currentCity}, ` : ''}
                 {profile.currentCountry}

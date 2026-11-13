@@ -10,8 +10,8 @@ admin, customer service and verification portals. Estimates assume a small team 
 | # | Milestone | Outcome | Estimate | Status |
 | --- | --- | --- | --- | --- |
 | M1 | Foundation | Monorepo, API core, family accounts and access, app shells | 1 week | Done (PR #1) |
-| M2 | Profiles | Families can create a full profile with photos and preferences | 2 weeks | In progress |
-| M3 | Verification | Every profile is ID- and liveness-checked before going live | 3 weeks | Not started |
+| M2 | Profiles | Families can create a full profile with photos and preferences | 2 weeks | Done (PR #2) |
+| M3 | Verification | Every profile is ID- and liveness-checked before going live | 3 weeks | Next |
 | M4 | Discovery | Search, daily AI picks, shortlist, privacy rules | 3 weeks | Not started |
 | M5 | Connections | Interests with family approvals, chat, safety, notifications | 3 weeks | Not started |
 | M6 | Payments | Plans, Razorpay, Stripe, store billing, per-country pricing | 2 weeks | Not started |
@@ -32,13 +32,14 @@ admin, customer service and verification portals. Estimates assume a small team 
 
 ## M2 Profiles
 
-- [ ] Partner preferences: age, height, religion, community, star, marital status, countries, education
-- [ ] Edit suggestions: relatives with *suggest* access propose changes; candidate or parent approves
-- [ ] Photo upload to object storage with presigned URLs; up to 8 photos, one primary
-- [ ] Blurred copy of every photo, shown until an interest is accepted
-- [ ] Profile completeness score with next-step hints
-- [ ] Web: profile creation wizard, profile editor, family members and access screen
-- [ ] Mobile: profile creation wizard and profile view
+- [x] Partner preferences: age, height, religion, community, star, marital status, countries, education
+- [x] Edit suggestions: relatives with *suggest* access propose changes; candidate or parent approves
+- [x] Photo upload to object storage with presigned URLs; up to 8 photos, one primary
+- [x] Blurred copy of every photo, shown until an interest is accepted
+- [x] Profile completeness score with next-step hints
+- [x] Web: profile creation wizard, profile editor, family members and access screen
+- [x] Mobile: profile creation wizard and profile view with photo upload
+- [x] OpenAPI docs at `/docs` for every endpoint, so every app builds against the same API
 
 ## M3 Verification
 

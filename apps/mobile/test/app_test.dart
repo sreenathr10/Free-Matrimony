@@ -16,10 +16,12 @@ class MemoryTokenStore implements TokenStore {
 
 void main() {
   testWidgets('welcome screen leads to login', (tester) async {
-    await tester.pumpWidget(ProviderScope(
-      overrides: [tokenStoreProvider.overrideWithValue(MemoryTokenStore())],
-      child: const FreeMatrimonyApp(),
-    ));
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [tokenStoreProvider.overrideWithValue(MemoryTokenStore())],
+        child: const FreeMatrimonyApp(),
+      ),
+    );
     expect(find.text('Every profile verified'), findsOneWidget);
     await tester.tap(find.text('Get started'));
     await tester.pumpAndSettle();
@@ -30,7 +32,13 @@ void main() {
   test('parses a profile from /profiles/mine', () {
     final p = MyProfile.fromJson({
       'invitationPending': true,
-      'profile': {'id': 'p1', 'fullName': 'Anjali Nair', 'status': 'PENDING_VERIFICATION', 'currentCity': 'Dubai', 'currentCountry': 'AE'},
+      'profile': {
+        'id': 'p1',
+        'fullName': 'Anjali Nair',
+        'status': 'PENDING_VERIFICATION',
+        'currentCity': 'Dubai',
+        'currentCountry': 'AE',
+      },
       'access': {
         'relation': 'MOTHER',
         'role': 'PARENT',
